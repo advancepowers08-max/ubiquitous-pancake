@@ -1,0 +1,1177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Washington State Civics & Pacific Northwest History Reference</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
+  <style>
+    :root {
+      --bg-study: #f8fafc;
+      --text-study: #1e293b;
+      --bg-dark: #313338;
+      --bg-sidebar: #2b2d31;
+      --bg-darker: #1e1f22;
+      --bg-input: #383a40;
+      --accent: #5865f2;
+      --success: #23a55a;
+      --danger: #f23f43;
+      --warning: #f0b232;
+      --text-light: #f2f3f5;
+      --text-muted: #949ba4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+    /* ================= TOAST NOTIFICATION BANNER ================= */
+    #toast-container {
+      position: fixed;
+      top: 16px;
+      right: 16px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .toast-alert {
+      background: #111214;
+      color: #fff;
+      border-left: 4px solid var(--danger);
+      padding: 12px 16px;
+      border-radius: 6px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+      font-size: 0.85rem;
+      max-width: 340px;
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ================= SINGLE-TAB GUARD MODAL ================= */
+    #tab-guard-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 10000;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+    .tab-guard-box {
+      background: var(--bg-sidebar);
+      padding: 24px;
+      border-radius: 8px;
+      max-width: 400px;
+      text-align: center;
+      border: 1px solid #4e5058;
+    }
+
+    /* ================= 1. STUDY GUIDE VIEW (COVER) ================= */
+    #study-view {
+      background: var(--bg-study);
+      color: var(--text-study);
+      min-height: 100vh;
+      padding: 40px 20px;
+      line-height: 1.6;
+    }
+    .study-container {
+      max-width: 850px;
+      margin: 0 auto;
+      background: white;
+      padding: 40px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      border: 1px solid #e2e8f0;
+    }
+    .study-header { border-bottom: 2px solid #0f172a; padding-bottom: 16px; margin-bottom: 24px; }
+    .study-header h1 { font-size: 1.8rem; color: #0f172a; }
+    .study-header p { color: #64748b; font-size: 0.95rem; }
+    .study-section { margin-bottom: 28px; }
+    .study-section h2 { font-size: 1.25rem; color: #1e3a8a; margin-bottom: 10px; }
+    .study-card { background: #f1f5f9; padding: 16px; border-left: 4px solid #1e3a8a; margin: 12px 0; border-radius: 4px; }
+    .study-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; }
+    #secret-trigger { cursor: text; user-select: none; }
+
+    /* Disguised Portal Login Modal & School Hours Unavailable Box */
+    #citation-modal, #unavailable-modal {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+    }
+    #unavailable-modal {
+      border-left: 4px solid #dc2626;
+      color: #991b1b;
+      background: #fef2f2;
+    }
+    .auth-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
+    #citation-modal input[type="text"], #citation-modal input[type="password"] {
+      padding: 8px 12px;
+      border: 1px solid #94a3b8;
+      border-radius: 4px;
+      width: 190px;
+    }
+    #citation-modal button {
+      padding: 8px 16px;
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    /* ================= 2. WORKSPACE VIEW ================= */
+    #app-view {
+      display: none;
+      height: 100vh;
+      width: 100vw;
+      background: var(--bg-dark);
+      color: var(--text-light);
+      flex-direction: row;
+      overflow: hidden;
+    }
+
+    .sidebar {
+      width: 280px;
+      background: var(--bg-sidebar);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid #1f2023;
+      padding: 14px;
+      overflow-y: auto;
+      gap: 12px;
+    }
+    .sidebar h3 { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 6px; }
+    .panel-box { background: var(--bg-darker); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
+    .panel-box input, .panel-box select {
+      width: 100%; background: var(--bg-input); border: none; color: white;
+      padding: 8px; border-radius: 4px; margin-top: 6px; margin-bottom: 8px; font-size: 0.82rem;
+    }
+    .btn {
+      width: 100%; padding: 8px 10px; border: none; border-radius: 4px;
+      font-weight: 600; cursor: pointer; color: white; transition: 0.15s; margin-bottom: 6px; font-size: 0.82rem;
+    }
+    .btn-primary { background: var(--accent); }
+    .btn-call { background: var(--success); }
+    .btn-danger { background: var(--danger); }
+    .btn-secondary { background: #4e5058; }
+
+    .user-profile {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      background: #111214;
+      border-radius: 8px;
+    }
+    .avatar-ring {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 1rem;
+      border: 3px solid transparent;
+      transition: border-color 0.08s ease, box-shadow 0.08s ease;
+    }
+    .speaking-active {
+      border-color: var(--success) !important;
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    .status-badge { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #949ba4; margin-right: 6px; }
+    .status-online { background: var(--success); }
+
+    #incoming-alert {
+      display: none;
+      background: #111214;
+      border: 2px solid var(--success);
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+
+    .main-stage {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    .stage-header {
+      min-height: 58px;
+      border-bottom: 1px solid #1f2023;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px;
+      gap: 10px;
+      background: var(--bg-dark);
+    }
+    .search-controls {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+    .search-bar {
+      background: var(--bg-darker);
+      border: 1px solid #111214;
+      color: var(--text-light);
+      padding: 6px 10px;
+      border-radius: 4px;
+      width: 260px;
+      font-size: 0.8rem;
+    }
+    .filter-select {
+      background: var(--bg-darker);
+      color: var(--text-light);
+      border: 1px solid #111214;
+      padding: 5px 8px;
+      border-radius: 4px;
+      font-size: 0.78rem;
+    }
+
+    #media-stage {
+      display: none;
+      background: #000;
+      height: 280px;
+      padding: 10px;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      border-bottom: 1px solid #1f2023;
+    }
+    .video-box {
+      height: 100%;
+      flex: 1;
+      max-width: 48%;
+      background: #111214;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .video-box video { width: 100%; height: 100%; object-fit: contain; }
+    .video-label {
+      position: absolute;
+      bottom: 8px;
+      left: 8px;
+      background: rgba(0,0,0,0.7);
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 0.75rem;
+    }
+
+    .entries-area {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+    .entry-item { display: flex; flex-direction: column; }
+    .entry-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
+    .entry-author { font-weight: 600; color: #fff; margin-right: 8px; font-size: 0.9rem; }
+    .entry-bot { color: var(--warning); font-weight: 700; }
+    .entry-body { font-size: 0.95rem; color: #dbdee1; line-height: 1.4; word-break: break-word; }
+
+    .dispatch-bar { padding: 0 20px 20px 20px; }
+    .dispatch-bar input {
+      width: 100%;
+      background: var(--bg-input);
+      border: none;
+      padding: 14px 16px;
+      border-radius: 8px;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Toast Popup Container -->
+  <div id="toast-container"></div>
+
+  <!-- Single-Tab Conflict Modal -->
+  <div id="tab-guard-overlay">
+    <div class="tab-guard-box" id="tab-guard-content">
+      <h3 style="margin-bottom: 10px;">Duplicate Tab Detected</h3>
+      <p id="tab-guard-text" style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+        Another tab was opened. Are you sure you want to close this tab and switch to the new one?
+      </p>
+      <div id="tab-guard-buttons" style="display: flex; gap: 10px;">
+        <button class="btn btn-danger" onclick="resolveTabConflict(true)">Yes, Close This Tab</button>
+        <button class="btn btn-primary" onclick="resolveTabConflict(false)">No, Keep This Tab</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 1. DISGUISED STUDY GUIDE VIEW ================= -->
+  <div id="study-view">
+    <div class="study-container">
+      <div class="study-header">
+        <h1>Washington State Civics & PNW History Reference</h1>
+        <p>Unit 4 Curriculum Resource • State Constitutional Structure & Local Governance</p>
+      </div>
+
+      <div class="study-section">
+        <h2>I. The Washington State Constitution</h2>
+        <p>Ratified by voters and admitted to the Union as the 42nd state, Washington's governing document establishes a separation of powers across the Executive, Legislative, and Judicial branches.</p>
+        <div class="study-card">
+          <strong>Key Exam Concept:</strong> Article I, Section 7 of the Washington State Constitution provides broader privacy protections concerning "private affairs" than the federal Fourth Amendment.
+        </div>
+      </div>
+
+      <div class="study-section">
+        <h2>II. Legislative Structure & Municipal Codes</h2>
+        <p>The bicameral legislature consists of 49 legislative districts, each electing one senator and two representatives. Local municipalities in Snohomish and King counties operate under First-Class, Second-Class, or Optional Municipal Code classifications.</p>
+      </div>
+
+      <!-- School Hours Unavailable Message -->
+      <div id="unavailable-modal">
+        <strong>Sorry, this resource index is currently unavailable.</strong>
+        <p style="font-size: 0.85rem; margin-top: 4px;">The external contributor database is offline for scheduled daytime maintenance (07:00 – 15:00 Mon–Thu / 07:00 – 14:00 Fri PST). Standard curriculum text remains accessible above.</p>
+      </div>
+
+      <!-- Disguised Sign-In / Sign-Up Box -->
+      <div id="citation-modal">
+        <p style="font-size: 0.85rem; font-weight: bold;">Archive Contributor Portal (Username & Shared Vault Passkey):</p>
+        <div class="auth-row">
+          <input type="text" id="username-input" placeholder="Username (e.g. jordan)">
+          <input type="password" id="password-input" placeholder="Shared Vault Passkey">
+          <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
+            <input type="checkbox" id="remember-check" checked> Remember Device
+          </label>
+          <button onclick="unlockWorkspace(false)">Access Archive</button>
+        </div>
+      </div>
+
+      <div class="study-footer">
+        <span>Curriculum Reference ID: WA-HIST-402</span>
+        <span>Statehood Ratified: November 11, <span id="secret-trigger" onclick="handleTriggerClick()">1889</span></span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= 2. HIDDEN E2EE WORKSPACE VIEW ================= -->
+  <div id="app-view">
+    <div class="sidebar">
+      <div class="user-profile">
+        <div id="my-avatar" class="avatar-ring">?</div>
+        <div style="flex:1; overflow:hidden;">
+          <div id="display-username" style="font-weight:700; font-size:0.9rem;">User</div>
+          <div style="font-size:0.72rem; color:var(--text-muted);">
+            <span id="conn-dot" class="status-badge"></span><span id="conn-status">Initializing...</span>
+          </div>
+        </div>
+      </div>
+
+      <div id="incoming-alert">
+        <div style="font-weight:700; margin-bottom:8px; font-size:0.85rem;">🔔 Incoming Direct Link!</div>
+        <button class="btn btn-call" onclick="acceptIncomingCall()">Accept Audio/Video</button>
+        <button class="btn btn-danger" onclick="declineIncomingCall()">Decline</button>
+      </div>
+
+      <div>
+        <h3>Direct Username Link</h3>
+        <div class="panel-box">
+          <label style="font-size:0.75rem; color:var(--text-muted);">Recipient Username:</label>
+          <input type="text" id="target-username-input" placeholder="Enter friend's username">
+          <button class="btn btn-primary" onclick="connectByUsername()">Link Direct Channel</button>
+          <button class="btn btn-call" onclick="initiateDirectCall(false)">🎙️ Ring Audio Call</button>
+          <button class="btn btn-secondary" onclick="initiateDirectCall(true)">📹 Ring Video Call</button>
+        </div>
+      </div>
+
+      <div id="call-controls-section" style="display:none;">
+        <h3>Active Link Controls</h3>
+        <div class="panel-box">
+          <button class="btn btn-secondary" id="mute-btn" onclick="toggleMic()">Mute Mic</button>
+          <button class="btn btn-secondary" id="cam-btn" onclick="toggleCamera()">Toggle Camera</button>
+          <button class="btn btn-primary" id="screen-btn" onclick="toggleScreenShare()">🖥️ Share Screen</button>
+          <button class="btn btn-danger" onclick="endActiveCall()">Disconnect Call</button>
+        </div>
+      </div>
+
+      <div>
+        <h3>Hardware Audio & Alerts</h3>
+        <div class="panel-box">
+          <label style="font-size:0.75rem; color:var(--text-muted);">Microphone Input:</label>
+          <select id="audio-input-select" onchange="switchAudioInput()"></select>
+
+          <label style="font-size:0.75rem; color:var(--text-muted);">Speaker / Earbuds Output:</label>
+          <select id="audio-output-select" onchange="switchAudioOutput()"></select>
+
+          <button class="btn btn-secondary" onclick="enableBrowserNotifications()">🔔 Enable Tab Popups</button>
+          <button class="btn btn-secondary" onclick="testSoundEffect()">🎵 Test Ringtone</button>
+        </div>
+      </div>
+
+      <div style="margin-top:auto;">
+        <button class="btn btn-danger" onclick="logoutSession()">Log Out & Clear Auto-Login</button>
+      </div>
+    </div>
+
+    <div class="main-stage">
+      <div class="stage-header">
+        <div style="font-weight: 600;">🔒 E2EE Direct Feed <span id="linked-partner-label" style="color:var(--text-muted); font-size:0.85rem; margin-left:8px;"></span></div>
+        
+        <!-- Discord-Style Search & Sort Bar -->
+        <div class="search-controls">
+          <input type="text" class="search-bar" id="search-input" placeholder="Search (try from:user before:YYYY-MM-DD)" oninput="renderEntries()">
+          <select class="filter-select" id="author-filter" onchange="renderEntries()">
+            <option value="all">All Users</option>
+          </select>
+          <input type="date" class="filter-select" id="date-filter" onchange="renderEntries()" title="Filter by specific date">
+          <select class="filter-select" id="sort-filter" onchange="renderEntries()">
+            <option value="oldest">Oldest → Newest</option>
+            <option value="newest">Newest → Oldest</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Video & Screen Share Stage -->
+      <div id="media-stage">
+        <div class="video-box">
+          <video id="local-video" autoplay muted playsinline></video>
+          <span class="video-label">You (Preview)</span>
+        </div>
+        <div class="video-box">
+          <video id="remote-video" autoplay playsinline></video>
+          <span class="video-label" id="remote-video-label">Partner Stream</span>
+        </div>
+      </div>
+
+      <div class="entries-area" id="entries-list"></div>
+
+      <div class="dispatch-bar">
+        <input type="text" id="dispatch-input" placeholder="Write an encrypted entry... (Press Enter)" onkeydown="if(event.key==='Enter') sendEntry()">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ================= 0. TOAST POPUP HELPER =================
+    function showToast(text, isError = true) {
+      const container = document.getElementById('toast-container');
+      const div = document.createElement('div');
+      div.className = 'toast-alert';
+      div.style.borderLeftColor = isError ? 'var(--danger)' : 'var(--success)';
+      div.innerText = text;
+      container.appendChild(div);
+      setTimeout(() => div.remove(), 4500);
+    }
+
+    // ================= 1. SINGLE-TAB ENFORCEMENT (BROADCAST CHANNEL) =================
+    const tabChannel = new BroadcastChannel('wa_civics_single_tab_guard');
+    let isWaitingForTabApproval = false;
+
+    tabChannel.onmessage = (e) => {
+      if (e.data.type === 'NEW_TAB_OPENED' && !isWaitingForTabApproval) {
+        // Show prompt in the ORIGINAL tab
+        document.getElementById('tab-guard-overlay').style.display = 'flex';
+      } else if (e.data.type === 'ALLOW_NEW_TAB' && isWaitingForTabApproval) {
+        // Original tab agreed to close; unlock this new tab
+        isWaitingForTabApproval = false;
+        document.getElementById('tab-guard-overlay').style.display = 'none';
+      } else if (e.data.type === 'REJECT_NEW_TAB' && isWaitingForTabApproval) {
+        // Original tab said NO; lock/close this new tab
+        document.body.innerHTML = '<div style="padding:40px;font-family:sans-serif;">Session active in original tab. You may close this tab.</div>';
+        window.close();
+      }
+    };
+
+    // Ping existing tabs on startup
+    window.addEventListener('DOMContentLoaded', () => {
+      isWaitingForTabApproval = true;
+      tabChannel.postMessage({ type: 'NEW_TAB_OPENED' });
+      // If no existing tab responds within 300ms, we are the only tab
+      setTimeout(() => { isWaitingForTabApproval = false; }, 300);
+    });
+
+    function resolveTabConflict(closeOriginalTab) {
+      if (closeOriginalTab) {
+        tabChannel.postMessage({ type: 'ALLOW_NEW_TAB' });
+        if (peer) peer.destroy();
+        document.body.innerHTML = '<div style="padding:40px;font-family:sans-serif;">Switched to new tab. You may close this window.</div>';
+        window.close();
+      } else {
+        tabChannel.postMessage({ type: 'REJECT_NEW_TAB' });
+        document.getElementById('tab-guard-overlay').style.display = 'none';
+      }
+    }
+
+    // ================= 2. WA SCHOOL HOURS LOCKDOWN & 3-SEC CLICK TIMER =================
+    // Mon-Thu: 7:00 AM to 3:00 PM (15:00) | Fri: 7:00 AM to 2:00 PM (14:00)
+    function isDuringSchoolLockdown() {
+      const now = new Date();
+      const day = now.getDay(); // 0 = Sun, 1 = Mon ... 5 = Fri, 6 = Sat
+      const hour = now.getHours();
+
+      if (day >= 1 && day <= 4) {
+        // Monday - Thursday: 7:00 AM to 2:59:59 PM
+        return (hour >= 7 && hour < 15);
+      } else if (day === 5) {
+        // Friday: 7:00 AM to 1:59:59 PM
+        return (hour >= 7 && hour < 14);
+      }
+      return false; // Sat & Sun unlocked
+    }
+
+    // Auto-check every 15 seconds in case 7:00 AM hits while open
+    setInterval(() => {
+      if (isDuringSchoolLockdown() && document.getElementById('app-view').style.display === 'flex') {
+        endActiveCall();
+        document.getElementById('app-view').style.display = 'none';
+        document.getElementById('study-view').style.display = 'block';
+        document.getElementById('unavailable-modal').style.display = 'block';
+      }
+    }, 15000);
+
+    let triggerClicks = 0;
+    let lastClickTimestamp = 0;
+
+    function handleTriggerClick() {
+      const now = Date.now();
+      // Reset back to 0 if more than 3 seconds (3000ms) elapsed since last click
+      if (now - lastClickTimestamp > 3000) {
+        triggerClicks = 0;
+      }
+      lastClickTimestamp = now;
+      triggerClicks++;
+
+      if (triggerClicks >= 3) {
+        triggerClicks = 0;
+
+        // Enforce School Hours Lockdown
+        if (isDuringSchoolLockdown()) {
+          document.getElementById('unavailable-modal').style.display = 'block';
+          document.getElementById('citation-modal').style.display = 'none';
+          return;
+        }
+
+        document.getElementById('unavailable-modal').style.display = 'none';
+        const savedSession = localStorage.getItem('wa_civics_saved_auth');
+        if (savedSession) {
+          const creds = JSON.parse(savedSession);
+          document.getElementById('username-input').value = creds.username;
+          document.getElementById('password-input').value = creds.passkey;
+          unlockWorkspace(true);
+        } else {
+          document.getElementById('citation-modal').style.display = 'block';
+        }
+      }
+    }
+
+    // Panic Button (ESC key)
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && document.getElementById('app-view').style.display === 'flex') {
+        document.getElementById('app-view').style.display = 'none';
+        document.getElementById('study-view').style.display = 'block';
+        document.getElementById('citation-modal').style.display = 'none';
+        stopRingtone();
+      }
+    });
+
+    function logoutSession() {
+      localStorage.removeItem('wa_civics_saved_auth');
+      location.reload();
+    }
+
+    // ================= 3. SYNTHESIZED RINGTONE & PING SOUNDS =================
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    let ringtoneInterval = null;
+
+    function playPingSound() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const now = audioCtx.currentTime;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(587.33, now);
+      osc.frequency.exponentialRampToValueAtTime(880, now + 0.12);
+      gain.gain.setValueAtTime(0.25, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start(now);
+      osc.stop(now + 0.35);
+    }
+
+    function playRingtoneBurst() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const notes = [523.25, 659.25, 783.99, 1046.50];
+      notes.forEach((freq, idx) => {
+        const now = audioCtx.currentTime + (idx * 0.11);
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+        gain.gain.setValueAtTime(0.2, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.3);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start(now);
+        osc.stop(now + 0.3);
+      });
+    }
+
+    function startRingtone() {
+      if (ringtoneInterval) return;
+      playRingtoneBurst();
+      ringtoneInterval = setInterval(playRingtoneBurst, 1600);
+    }
+
+    function stopRingtone() {
+      if (ringtoneInterval) {
+        clearInterval(ringtoneInterval);
+        ringtoneInterval = null;
+      }
+    }
+
+    function testSoundEffect() {
+      playRingtoneBurst();
+    }
+
+    // ================= 4. DESKTOP / BACKGROUND TAB NOTIFICATIONS =================
+    function enableBrowserNotifications() {
+      if (!("Notification" in window)) return showToast("Browser notifications not supported.");
+      Notification.requestPermission().then(perm => {
+        if (perm === "granted") {
+          showToast("Background tab notifications enabled!", false);
+        }
+      });
+    }
+
+    function triggerPopupAlert(title, bodyText) {
+      if (document.hidden) {
+        let flash = true;
+        const origTitle = document.title;
+        const flashTimer = setInterval(() => {
+          if (!document.hidden) {
+            clearInterval(flashTimer);
+            document.title = origTitle;
+          } else {
+            document.title = flash ? "🔔 [1] New Archive Update" : origTitle;
+            flash = !flash;
+          }
+        }, 900);
+      }
+      if ("Notification" in window && Notification.permission === "granted" && document.hidden) {
+        new Notification(title, { body: bodyText });
+      }
+    }
+
+    // ================= 5. E2EE CRYPTO ENGINE (AES-256-GCM) =================
+    let cryptoKey = null;
+    let myUsername = "";
+    let decryptedLogs = [];
+
+    async function deriveKey(passphrase) {
+      const enc = new TextEncoder();
+      const keyMaterial = await window.crypto.subtle.importKey(
+        "raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]
+      );
+      return window.crypto.subtle.deriveKey(
+        { name: "PBKDF2", salt: enc.encode("wa-civics-1889-v2"), iterations: 100000, hash: "SHA-256" },
+        keyMaterial,
+        { name: "AES-GCM", length: 256 },
+        false,
+        ["encrypt", "decrypt"]
+      );
+    }
+
+    async function encryptPayload(plainObj) {
+      const iv = window.crypto.getRandomValues(new Uint8Array(12));
+      const encoded = new TextEncoder().encode(JSON.stringify(plainObj));
+      const cipherBuf = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
+      return { iv: Array.from(iv), data: Array.from(new Uint8Array(cipherBuf)) };
+    }
+
+    async function decryptPayload(payload) {
+      try {
+        const iv = new Uint8Array(payload.iv);
+        const data = new Uint8Array(payload.data);
+        const plainBuf = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, cryptoKey, data);
+        return JSON.parse(new TextDecoder().decode(plainBuf));
+      } catch (e) {
+        return null;
+      }
+    }
+
+    // ================= 6. WORKSPACE UNLOCK & DISCORD-STYLE SEARCH =================
+    async function unlockWorkspace(isAuto) {
+      if (isDuringSchoolLockdown()) {
+        document.getElementById('unavailable-modal').style.display = 'block';
+        return;
+      }
+      const rawUser = document.getElementById('username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      const pass = document.getElementById('password-input').value.trim();
+      if (!rawUser || !pass) return showToast("Enter both Username and Shared Vault Passkey.");
+
+      myUsername = rawUser;
+      cryptoKey = await deriveKey(pass);
+
+      if (!isAuto && document.getElementById('remember-check').checked) {
+        localStorage.setItem('wa_civics_saved_auth', JSON.stringify({ username: myUsername, passkey: pass }));
+      }
+
+      document.getElementById('display-username').innerText = myUsername;
+      document.getElementById('my-avatar').innerText = myUsername[0].toUpperCase();
+
+      const lastPartner = localStorage.getItem('wa_civics_last_partner');
+      if (lastPartner) document.getElementById('target-username-input').value = lastPartner;
+
+      document.getElementById('study-view').style.display = 'none';
+      document.getElementById('app-view').style.display = 'flex';
+
+      await loadStoredEntries();
+      initPeerWithUsername();
+      loadAudioDevices();
+    }
+
+    async function loadStoredEntries() {
+      const raw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
+      decryptedLogs = [];
+      for (const item of raw) {
+        const entry = await decryptPayload(item);
+        if (entry) decryptedLogs.push(entry);
+      }
+      updateAuthorFilterDropdown();
+      renderEntries();
+    }
+
+    function updateAuthorFilterDropdown() {
+      const select = document.getElementById('author-filter');
+      const currentVal = select.value;
+      const authors = [...new Set(decryptedLogs.map(m => m.author))];
+      select.innerHTML = '<option value="all">All Users</option>';
+      authors.forEach(a => {
+        const opt = document.createElement('option');
+        opt.value = a.toLowerCase();
+        opt.innerText = `from: ${a}`;
+        select.appendChild(opt);
+      });
+      if ([...select.options].some(o => o.value === currentVal)) select.value = currentVal;
+    }
+
+    async function saveAndRenderEntry(entryObj, broadcast = true) {
+      if (!entryObj.isoDate) {
+        entryObj.isoDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
+        entryObj.timestamp = Date.now();
+      }
+      decryptedLogs.push(entryObj);
+      updateAuthorFilterDropdown();
+      renderEntries();
+
+      const encrypted = await encryptPayload(entryObj);
+      const raw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
+      raw.push(encrypted);
+      localStorage.setItem('wa_civics_e2ee_logs_v2', JSON.stringify(raw));
+
+      if (broadcast && dataConn && dataConn.open) {
+        dataConn.send({ type: 'entry', payload: encrypted });
+      }
+    }
+
+    function pushAutomatedNotifier(noticeText, broadcast = true) {
+      const botEntry = {
+        author: "Automated Notifier",
+        isBot: true,
+        text: noticeText,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isoDate: new Date().toISOString().split('T')[0],
+        timestamp: Date.now()
+      };
+      saveAndRenderEntry(botEntry, broadcast);
+    }
+
+    // Supports Discord search tokens: from:user, before:YYYY-MM-DD, after:YYYY-MM-DD, on:YYYY-MM-DD
+    function renderEntries() {
+      const list = document.getElementById('entries-list');
+      let rawQuery = document.getElementById('search-input').value.trim().toLowerCase();
+      const dropdownAuthor = document.getElementById('author-filter').value;
+      const datePickerVal = document.getElementById('date-filter').value;
+      const sortOrder = document.getElementById('sort-filter').value;
+
+      let tokenFrom = null, tokenBefore = null, tokenAfter = null, tokenOn = null;
+
+      rawQuery = rawQuery.replace(/from:([a-z0-9_-]+)/g, (_, u) => { tokenFrom = u; return ''; });
+      rawQuery = rawQuery.replace(/before:(\d{4}-\d{2}-\d{2})/g, (_, d) => { tokenBefore = d; return ''; });
+      rawQuery = rawQuery.replace(/after:(\d{4}-\d{2}-\d{2})/g, (_, d) => { tokenAfter = d; return ''; });
+      rawQuery = rawQuery.replace(/on:(\d{4}-\d{2}-\d{2})/g, (_, d) => { tokenOn = d; return ''; });
+      const cleanTextQuery = rawQuery.trim();
+
+      let results = decryptedLogs.filter(m => {
+        const entryDate = m.isoDate || new Date().toISOString().split('T')[0];
+        const entryAuthor = m.author.toLowerCase();
+
+        if (dropdownAuthor !== 'all' && entryAuthor !== dropdownAuthor) return false;
+        if (tokenFrom && entryAuthor !== tokenFrom) return false;
+        if (datePickerVal && entryDate !== datePickerVal) return false;
+        if (tokenOn && entryDate !== tokenOn) return false;
+        if (tokenBefore && !(entryDate < tokenBefore)) return false;
+        if (tokenAfter && !(entryDate > tokenAfter)) return false;
+        if (cleanTextQuery && !m.text.toLowerCase().includes(cleanTextQuery)) return false;
+        return true;
+      });
+
+      results.sort((a, b) => {
+        const tA = a.timestamp || 0;
+        const tB = b.timestamp || 0;
+        return sortOrder === 'newest' ? (tB - tA) : (tA - tB);
+      });
+
+      list.innerHTML = '';
+      results.forEach(m => {
+        const div = document.createElement('div');
+        div.className = 'entry-item';
+        const authorClass = m.isBot ? 'entry-author entry-bot' : 'entry-author';
+        const dateBadge = m.isoDate ? `${m.isoDate} • ` : '';
+        div.innerHTML = `
+          <div class="entry-meta"><span class="${authorClass}">${escapeHtml(m.author)}</span>${dateBadge}${m.time}</div>
+          <div class="entry-body">${escapeHtml(m.text)}</div>
+        `;
+        list.appendChild(div);
+      });
+      if (sortOrder === 'oldest') list.scrollTop = list.scrollHeight;
+    }
+
+    function sendEntry() {
+      const input = document.getElementById('dispatch-input');
+      const text = input.value.trim();
+      if (!text) return;
+      input.value = '';
+
+      const entryObj = {
+        author: myUsername,
+        isBot: false,
+        text: text,
+        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        isoDate: new Date().toISOString().split('T')[0],
+        timestamp: Date.now()
+      };
+      saveAndRenderEntry(entryObj, true);
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
+    }
+
+    // ================= 7. USERNAME-BASED PEERJS & SYNC =================
+    const PEER_PREFIX = "wa-civics-archive-v2-";
+    let peer = null;
+    let dataConn = null;
+    let activeCall = null;
+    let pendingIncomingCall = null;
+    let localStream = null;
+
+    function initPeerWithUsername() {
+      if (peer) peer.destroy();
+      const myFullPeerId = PEER_PREFIX + myUsername;
+      peer = new Peer(myFullPeerId);
+
+      peer.on('open', () => {
+        document.getElementById('conn-status').innerText = 'Online (@' + myUsername + ')';
+        const savedTarget = document.getElementById('target-username-input').value.trim();
+        if (savedTarget) connectByUsername(true);
+      });
+
+      peer.on('connection', (conn) => {
+        setupDataChannel(conn);
+      });
+
+      peer.on('call', (call) => {
+        pendingIncomingCall = call;
+        document.getElementById('incoming-alert').style.display = 'block';
+        startRingtone();
+        triggerPopupAlert("Automated Notifier", "Incoming Direct Audio/Video Link!");
+      });
+
+      peer.on('error', (err) => {
+        if (err.type === 'peer-unavailable') {
+          document.getElementById('conn-status').innerText = 'Friend Offline (Saved Locally)';
+        }
+      });
+    }
+
+    function connectByUsername(silent = false) {
+      const targetUser = document.getElementById('target-username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!targetUser) return;
+      localStorage.setItem('wa_civics_last_partner', targetUser);
+      document.getElementById('linked-partner-label').innerText = `• Linked with @${targetUser}`;
+
+      const conn = peer.connect(PEER_PREFIX + targetUser);
+      setupDataChannel(conn, silent);
+    }
+
+    function setupDataChannel(conn, silent = false) {
+      dataConn = conn;
+      dataConn.on('open', async () => {
+        document.getElementById('conn-dot').classList.add('status-online');
+        document.getElementById('conn-status').innerText = 'Direct Link Active';
+
+        const raw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
+        dataConn.send({ type: 'history_sync', logs: raw });
+
+        if (!silent) {
+          pushAutomatedNotifier(`@${myUsername} connected to the live room.`, true);
+        }
+      });
+
+      dataConn.on('data', async (packet) => {
+        if (packet.type === 'entry') {
+          const msg = await decryptPayload(packet.payload);
+          if (msg) {
+            saveAndRenderEntry(msg, false);
+            playPingSound();
+            triggerPopupAlert(`Automated Notifier (@${msg.author})`, msg.text);
+          }
+        } else if (packet.type === 'history_sync') {
+          const localRaw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
+          if (packet.logs.length > localRaw.length) {
+            localStorage.setItem('wa_civics_e2ee_logs_v2', JSON.stringify(packet.logs));
+            await loadStoredEntries();
+          }
+        }
+      });
+    }
+
+    // ================= 8. CAMERA/MIC HARDWARE SAFE STREAMING =================
+    let micAnalyserInterval = null;
+
+    async function getMediaStream(withVideo = false) {
+      const audioSource = document.getElementById('audio-input-select').value;
+      const audioConstraint = audioSource ? { deviceId: { exact: audioSource } } : true;
+
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: audioConstraint,
+          video: withVideo
+        });
+        setupMicSpeakingIndicator(stream);
+        return stream;
+      } catch (err) {
+        if (withVideo && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+          showToast("⚠️ No Webcam Detected: Automatically switching to Audio-Only mode.");
+          const audioOnlyStream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint, video: false });
+          setupMicSpeakingIndicator(audioOnlyStream);
+          return audioOnlyStream;
+        } else if (err.name === 'NotFoundError') {
+          showToast("⚠️ No Microphone Detected! Check your audio input connection.");
+          throw err;
+        } else {
+          showToast(`⚠️ Media Permission Error: ${err.message}`);
+          throw err;
+        }
+      }
+    }
+
+    function setupMicSpeakingIndicator(stream) {
+      if (micAnalyserInterval) clearInterval(micAnalyserInterval);
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      const source = audioCtx.createMediaStreamSource(stream);
+      const analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      source.connect(analyser);
+
+      const dataArray = new Uint8Array(analyser.frequencyBinCount);
+      const avatarEl = document.getElementById('my-avatar');
+
+      micAnalyserInterval = setInterval(() => {
+        const audioTrack = stream.getAudioTracks()[0];
+        if (!audioTrack || !audioTrack.enabled) {
+          avatarEl.classList.remove('speaking-active');
+          return;
+        }
+        analyser.getByteFrequencyData(dataArray);
+        const avgVolume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
+        if (avgVolume > 18) {
+          avatarEl.classList.add('speaking-active');
+        } else {
+          avatarEl.classList.remove('speaking-active');
+        }
+      }, 80);
+    }
+
+    async function initiateDirectCall(withVideo) {
+      const targetUser = document.getElementById('target-username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+      if (!targetUser) return showToast("Enter your friend's username first!");
+
+      try {
+        localStream = await getMediaStream(withVideo);
+        document.getElementById('local-video').srcObject = localStream;
+        document.getElementById('media-stage').style.display = 'flex';
+
+        pushAutomatedNotifier(`@${myUsername} started ringing @${targetUser}...`, true);
+        const call = peer.call(PEER_PREFIX + targetUser, localStream);
+        bindCallEvents(call);
+      } catch (e) {}
+    }
+
+    async function acceptIncomingCall() {
+      stopRingtone();
+      document.getElementById('incoming-alert').style.display = 'none';
+      if (!pendingIncomingCall) return;
+
+      try {
+        localStream = await getMediaStream(false);
+        document.getElementById('local-video').srcObject = localStream;
+        pendingIncomingCall.answer(localStream);
+        bindCallEvents(pendingIncomingCall);
+        pushAutomatedNotifier(`@${myUsername} joined the live audio/video link.`, true);
+        pendingIncomingCall = null;
+      } catch (e) {}
+    }
+
+    function declineIncomingCall() {
+      stopRingtone();
+      document.getElementById('incoming-alert').style.display = 'none';
+      if (pendingIncomingCall) {
+        pendingIncomingCall.close();
+        pendingIncomingCall = null;
+      }
+    }
+
+    function bindCallEvents(call) {
+      activeCall = call;
+      document.getElementById('call-controls-section').style.display = 'block';
+
+      call.on('stream', (remoteStream) => {
+        const remoteVid = document.getElementById('remote-video');
+        remoteVid.srcObject = remoteStream;
+        document.getElementById('media-stage').style.display = 'flex';
+        document.getElementById('conn-status').innerText = 'In Direct Call 🎙️';
+      });
+
+      call.on('close', () => {
+        endActiveCall();
+      });
+    }
+
+    function toggleMic() {
+      if (!localStream) return;
+      const track = localStream.getAudioTracks()[0];
+      if (!track) return;
+      track.enabled = !track.enabled;
+      document.getElementById('mute-btn').innerText = track.enabled ? 'Mute Mic' : 'Unmute Mic (Muted)';
+    }
+
+    async function toggleCamera() {
+      if (!localStream) return showToast("Start an audio or video call first!");
+      const videoTrack = localStream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = !videoTrack.enabled;
+        document.getElementById('cam-btn').innerText = videoTrack.enabled ? 'Disable Camera' : 'Enable Camera';
+      } else {
+        try {
+          const camStream = await navigator.mediaDevices.getUserMedia({ video: true });
+          const newVideoTrack = camStream.getVideoTracks()[0];
+          localStream.addTrack(newVideoTrack);
+          document.getElementById('local-video').srcObject = localStream;
+          if (activeCall) {
+            const sender = activeCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+            if (sender) sender.replaceTrack(newVideoTrack);
+          }
+        } catch (err) {
+          if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+            showToast("⚠️ Camera Device Not Found: Your desktop does not have a webcam connected.");
+          } else {
+            showToast(`⚠️ Could not enable camera: ${err.message}`);
+          }
+        }
+      }
+    }
+
+    async function toggleScreenShare() {
+      if (!activeCall) return showToast("Start an audio or video call first!");
+      try {
+        const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
+        const screenTrack = screenStream.getVideoTracks()[0];
+
+        document.getElementById('local-video').srcObject = screenStream;
+        document.getElementById('media-stage').style.display = 'flex';
+
+        const sender = activeCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
+        if (sender) {
+          sender.replaceTrack(screenTrack);
+        } else {
+          activeCall.peerConnection.addTrack(screenTrack, localStream);
+        }
+
+        screenTrack.onended = () => {
+          document.getElementById('local-video').srcObject = localStream;
+        };
+      } catch (e) {
+        showToast("Screen share cancelled.", false);
+      }
+    }
+
+    function endActiveCall() {
+      if (activeCall) activeCall.close();
+      if (localStream) localStream.getTracks().forEach(t => t.stop());
+      if (micAnalyserInterval) clearInterval(micAnalyserInterval);
+      document.getElementById('my-avatar').classList.remove('speaking-active');
+      document.getElementById('media-stage').style.display = 'none';
+      document.getElementById('call-controls-section').style.display = 'none';
+      document.getElementById('conn-status').innerText = 'Direct Link Active';
+    }
+
+    // ================= 9. MIC & EARBUDS DEVICE SWITCHER =================
+    async function loadAudioDevices() {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const inSelect = document.getElementById('audio-input-select');
+        const outSelect = document.getElementById('audio-output-select');
+        inSelect.innerHTML = '';
+        outSelect.innerHTML = '';
+
+        devices.forEach(d => {
+          const opt = document.createElement('option');
+          opt.value = d.deviceId;
+          if (d.kind === 'audioinput') {
+            opt.text = d.label || `Microphone ${inSelect.length + 1}`;
+            inSelect.appendChild(opt);
+          } else if (d.kind === 'audiooutput') {
+            opt.text = d.label || `Speaker / Earbuds ${outSelect.length + 1}`;
+            outSelect.appendChild(opt);
+          }
+        });
+      } catch (e) {}
+    }
+
+    navigator.mediaDevices.ondevicechange = () => loadAudioDevices();
+
+    async function switchAudioInput() {
+      if (!localStream) return;
+      const newStream = await getMediaStream(localStream.getVideoTracks().length > 0);
+      const newAudioTrack = newStream.getAudioTracks()[0];
+      if (activeCall) {
+        const sender = activeCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'audio');
+        if (sender) sender.replaceTrack(newAudioTrack);
+      }
+      localStream = newStream;
+    }
+
+    async function switchAudioOutput() {
+      const outId = document.getElementById('audio-output-select').value;
+      const remoteVid = document.getElementById('remote-video');
+      if (typeof remoteVid.sinkId !== 'undefined') {
+        await remoteVid.setSinkId(outId);
+      }
+    }
+  </script>
+</body>
+</html>
