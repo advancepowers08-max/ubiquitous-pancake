@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Washington State Civics & Pacific Northwest History Reference</title>
+  <title>Washington State Civics, Constitutional Law & Pacific Northwest History</title>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
   <style>
     :root {
-      --bg-study: #f8fafc;
+      --bg-study: #f1f5f9;
       --text-study: #1e293b;
+      --primary-navy: #0f172a;
+      --accent-blue: #1d4ed8;
       --bg-dark: #313338;
       --bg-sidebar: #2b2d31;
       --bg-darker: #1e1f22;
@@ -21,264 +23,123 @@
       --text-muted: #949ba4;
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Georgia, sans-serif; }
 
-    /* ================= TOAST NOTIFICATION BANNER ================= */
-    #toast-container {
-      position: fixed;
-      top: 16px;
-      right: 16px;
-      z-index: 9999;
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-    .toast-alert {
-      background: #111214;
-      color: #fff;
-      border-left: 4px solid var(--danger);
-      padding: 12px 16px;
-      border-radius: 6px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      font-size: 0.85rem;
-      max-width: 340px;
-      animation: fadeIn 0.2s ease;
-    }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    /* ================= TOAST & SINGLE TAB GUARD ================= */
+    #toast-container { position: fixed; top: 16px; right: 16px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+    .toast-alert { background: #111214; color: #fff; border-left: 4px solid var(--danger); padding: 12px 16px; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.4); font-size: 0.85rem; max-width: 340px; }
 
-    /* ================= SINGLE-TAB GUARD MODAL ================= */
-    #tab-guard-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 10000;
-      align-items: center;
-      justify-content: center;
-      color: white;
-    }
-    .tab-guard-box {
-      background: var(--bg-sidebar);
-      padding: 24px;
-      border-radius: 8px;
-      max-width: 400px;
-      text-align: center;
-      border: 1px solid #4e5058;
-    }
+    #tab-guard-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; color: white; }
+    .tab-guard-box { background: var(--bg-sidebar); padding: 24px; border-radius: 8px; max-width: 400px; text-align: center; border: 1px solid #4e5058; }
 
-    /* ================= 1. STUDY GUIDE VIEW (COVER) ================= */
-    #study-view {
-      background: var(--bg-study);
-      color: var(--text-study);
-      min-height: 100vh;
-      padding: 40px 20px;
-      line-height: 1.6;
+    /* ================= 1. ULTRA-BORING ACADEMIC TEXTBOOK PORTAL ================= */
+    #study-view { background: var(--bg-study); color: var(--text-study); min-height: 100vh; padding-bottom: 60px; line-height: 1.65; }
+    .top-banner { background: #1e293b; color: white; padding: 18px 20px; border-bottom: 3px solid #64748b; }
+    .top-banner-inner { max-width: 1000px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+    .badge-std { background: #334155; border: 1px solid #475569; padding: 6px 12px; border-radius: 6px; font-size: 0.78rem; color: #eff6ff; }
+
+    .nav-tabs { max-width: 1000px; margin: 20px auto 0; display: flex; gap: 8px; padding: 0 20px; flex-wrap: wrap; }
+    .tab-btn {
+      padding: 10px 18px; background: #e2e8f0; border: 1px solid #cbd5e1; border-bottom: none;
+      border-radius: 8px 8px 0 0; cursor: pointer; font-weight: 600; color: #475569; font-size: 0.88rem; transition: 0.15s;
     }
+    .tab-btn.active { background: white; color: var(--primary-navy); border-top: 3px solid #334155; }
+
     .study-container {
-      max-width: 850px;
-      margin: 0 auto;
-      background: white;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      border: 1px solid #e2e8f0;
+      max-width: 960px; margin: 0 auto; background: white; padding: 36px 40px;
+      border-radius: 0 8px 8px 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); border: 1px solid #cbd5e1;
+      font-family: Georgia, 'Times New Roman', serif;
     }
-    .study-header { border-bottom: 2px solid #0f172a; padding-bottom: 16px; margin-bottom: 24px; }
-    .study-header h1 { font-size: 1.8rem; color: #0f172a; }
-    .study-header p { color: #64748b; font-size: 0.95rem; }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
     .study-section { margin-bottom: 28px; }
-    .study-section h2 { font-size: 1.25rem; color: #1e3a8a; margin-bottom: 10px; }
-    .study-card { background: #f1f5f9; padding: 16px; border-left: 4px solid #1e3a8a; margin: 12px 0; border-radius: 4px; }
-    .study-footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0; font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; }
+    .study-section h2 { font-family: Georgia, serif; font-size: 1.35rem; color: var(--primary-navy); margin-bottom: 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+    .study-section h3 { font-family: Georgia, serif; font-size: 1.08rem; color: #1e3a8a; margin: 18px 0 8px; }
+    .study-section p { margin-bottom: 12px; color: #334155; font-size: 0.96rem; }
+    .study-card { font-family: sans-serif; background: #f8fafc; padding: 16px 20px; border-left: 4px solid #334155; margin: 16px 0; border-radius: 4px; }
+
+    .civics-table { font-family: sans-serif; width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 0.88rem; }
+    .civics-table th, .civics-table td { border: 1px solid #cbd5e1; padding: 10px 14px; text-align: left; }
+    .civics-table th { background: #f1f5f9; color: var(--primary-navy); font-weight: 700; }
+    .civics-table tr:nth-child(even) { background: #f8fafc; }
+
+    .flashcard-box {
+      background: #1e293b; border: 2px solid #475569; color: white; min-height: 210px;
+      border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 30px; text-align: center; cursor: pointer; user-select: none; margin: 20px 0;
+    }
+    .flashcard-controls { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .study-btn { padding: 8px 16px; background: #334155; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; }
+
+    .quiz-q { background: #f8fafc; border: 1px solid #e2e8f0; padding: 18px; border-radius: 8px; margin-bottom: 16px; }
+    .quiz-q p { font-weight: 600; margin-bottom: 10px; color: var(--primary-navy); }
+    .quiz-opt { display: block; margin: 6px 0; cursor: pointer; font-size: 0.92rem; }
+
+    .study-footer {
+      font-family: sans-serif; margin-top: 40px; padding-top: 16px; border-top: 1px solid #e2e8f0;
+      font-size: 0.85rem; color: #64748b; display: flex; justify-content: space-between; flex-wrap: wrap;
+    }
     #secret-trigger { cursor: text; user-select: none; }
 
-    /* Disguised Portal Login Modal & School Hours Unavailable Box */
     #citation-modal, #unavailable-modal {
-      display: none;
-      margin-top: 20px;
-      padding: 18px;
-      background: #f8fafc;
-      border: 1px solid #cbd5e1;
-      border-radius: 6px;
+      font-family: sans-serif; display: none; margin-top: 20px; padding: 18px; background: #f8fafc; border: 1px solid #cbd5e1; border-radius: 6px;
     }
-    #unavailable-modal {
-      border-left: 4px solid #dc2626;
-      color: #991b1b;
-      background: #fef2f2;
-    }
+    #unavailable-modal { border-left: 4px solid #dc2626; color: #991b1b; background: #fef2f2; }
     .auth-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 8px; }
-    #citation-modal input[type="text"], #citation-modal input[type="password"] {
-      padding: 8px 12px;
-      border: 1px solid #94a3b8;
-      border-radius: 4px;
-      width: 190px;
-    }
-    #citation-modal button {
-      padding: 8px 16px;
-      background: #1e3a8a;
-      color: white;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      font-weight: 600;
-    }
+    #citation-modal input[type="text"], #citation-modal input[type="password"] { padding: 8px 12px; border: 1px solid #94a3b8; border-radius: 4px; width: 190px; }
+    #citation-modal button { padding: 8px 16px; background: #1e3a8a; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: 600; }
 
-    /* ================= 2. WORKSPACE VIEW ================= */
-    #app-view {
-      display: none;
-      height: 100vh;
-      width: 100vw;
-      background: var(--bg-dark);
-      color: var(--text-light);
-      flex-direction: row;
-      overflow: hidden;
-    }
-
-    .sidebar {
-      width: 280px;
-      background: var(--bg-sidebar);
-      display: flex;
-      flex-direction: column;
-      border-right: 1px solid #1f2023;
-      padding: 14px;
-      overflow-y: auto;
-      gap: 12px;
-    }
+    /* ================= 2. HIDDEN E2EE WORKSPACE VIEW ================= */
+    #app-view { display: none; height: 100vh; width: 100vw; background: var(--bg-dark); color: var(--text-light); flex-direction: row; overflow: hidden; }
+    .sidebar { width: 285px; background: var(--bg-sidebar); display: flex; flex-direction: column; border-right: 1px solid #1f2023; padding: 14px; overflow-y: auto; gap: 12px; }
     .sidebar h3 { font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 0.5px; margin-bottom: 6px; }
     .panel-box { background: var(--bg-darker); padding: 12px; border-radius: 8px; font-size: 0.85rem; }
-    .panel-box input, .panel-box select {
-      width: 100%; background: var(--bg-input); border: none; color: white;
-      padding: 8px; border-radius: 4px; margin-top: 6px; margin-bottom: 8px; font-size: 0.82rem;
-    }
-    .btn {
-      width: 100%; padding: 8px 10px; border: none; border-radius: 4px;
-      font-weight: 600; cursor: pointer; color: white; transition: 0.15s; margin-bottom: 6px; font-size: 0.82rem;
-    }
+    .panel-box input, .panel-box select { width: 100%; background: var(--bg-input); border: none; color: white; padding: 8px; border-radius: 4px; margin-top: 6px; margin-bottom: 8px; font-size: 0.82rem; }
+    .btn { width: 100%; padding: 8px 10px; border: none; border-radius: 4px; font-weight: 600; cursor: pointer; color: white; transition: 0.15s; margin-bottom: 6px; font-size: 0.82rem; }
     .btn-primary { background: var(--accent); }
     .btn-call { background: var(--success); }
     .btn-danger { background: var(--danger); }
+    .btn-warning { background: var(--warning); color: #111214; }
     .btn-secondary { background: #4e5058; }
 
-    .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      padding: 8px;
-      background: #111214;
-      border-radius: 8px;
-    }
-    .avatar-ring {
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: var(--accent);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 1rem;
-      border: 3px solid transparent;
-      transition: border-color 0.08s ease, box-shadow 0.08s ease;
-    }
-    .speaking-active {
-      border-color: var(--success) !important;
-      box-shadow: 0 0 10px var(--success);
-    }
-
+    .user-profile { display: flex; align-items: center; gap: 10px; padding: 8px; background: #111214; border-radius: 8px; }
+    .avatar-ring { width: 38px; height: 38px; border-radius: 50%; background: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 1rem; border: 3px solid transparent; transition: 0.08s; }
+    .speaking-active { border-color: var(--success) !important; box-shadow: 0 0 10px var(--success); }
     .status-badge { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #949ba4; margin-right: 6px; }
     .status-online { background: var(--success); }
 
-    #incoming-alert {
-      display: none;
+    /* Mic Test Level Bar */
+    .mic-meter-bg {
+      width: 100%;
+      height: 8px;
       background: #111214;
-      border: 2px solid var(--success);
-      padding: 12px;
-      border-radius: 8px;
-      text-align: center;
-    }
-
-    .main-stage {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    .stage-header {
-      min-height: 58px;
-      border-bottom: 1px solid #1f2023;
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 20px;
-      gap: 10px;
-      background: var(--bg-dark);
-    }
-    .search-controls {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-    .search-bar {
-      background: var(--bg-darker);
-      border: 1px solid #111214;
-      color: var(--text-light);
-      padding: 6px 10px;
       border-radius: 4px;
-      width: 260px;
-      font-size: 0.8rem;
-    }
-    .filter-select {
-      background: var(--bg-darker);
-      color: var(--text-light);
-      border: 1px solid #111214;
-      padding: 5px 8px;
-      border-radius: 4px;
-      font-size: 0.78rem;
-    }
-
-    #media-stage {
-      display: none;
-      background: #000;
-      height: 280px;
-      padding: 10px;
-      gap: 10px;
-      justify-content: center;
-      align-items: center;
-      border-bottom: 1px solid #1f2023;
-    }
-    .video-box {
-      height: 100%;
-      flex: 1;
-      max-width: 48%;
-      background: #111214;
-      border-radius: 8px;
       overflow: hidden;
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: 6px 0 10px 0;
+      border: 1px solid #2b2d31;
     }
-    .video-box video { width: 100%; height: 100%; object-fit: contain; }
-    .video-label {
-      position: absolute;
-      bottom: 8px;
-      left: 8px;
-      background: rgba(0,0,0,0.7);
-      padding: 3px 8px;
-      border-radius: 4px;
-      font-size: 0.75rem;
+    .mic-meter-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #23a55a, #f0b232);
+      transition: width 0.06s ease;
     }
 
-    .entries-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
+    #incoming-alert { display: none; background: #111214; border: 2px solid var(--success); padding: 12px; border-radius: 8px; text-align: center; }
+
+    .main-stage { flex: 1; display: flex; flex-direction: column; height: 100vh; }
+    .stage-header { min-height: 58px; border-bottom: 1px solid #1f2023; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; padding: 8px 20px; gap: 10px; background: var(--bg-dark); }
+    .search-controls { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .search-bar { background: var(--bg-darker); border: 1px solid #111214; color: var(--text-light); padding: 6px 10px; border-radius: 4px; width: 250px; font-size: 0.8rem; }
+    .filter-select { background: var(--bg-darker); color: var(--text-light); border: 1px solid #111214; padding: 5px 8px; border-radius: 4px; font-size: 0.78rem; }
+
+    #media-stage { display: none; background: #000; height: 280px; padding: 10px; gap: 10px; justify-content: center; align-items: center; border-bottom: 1px solid #1f2023; }
+    .video-box { height: 100%; flex: 1; max-width: 48%; background: #111214; border-radius: 8px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+    .video-box video { width: 100%; height: 100%; object-fit: contain; }
+    .video-label { position: absolute; bottom: 8px; left: 8px; background: rgba(0,0,0,0.7); padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; }
+
+    .entries-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 14px; }
     .entry-item { display: flex; flex-direction: column; }
     .entry-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px; }
     .entry-author { font-weight: 600; color: #fff; margin-right: 8px; font-size: 0.9rem; }
@@ -286,80 +147,283 @@
     .entry-body { font-size: 0.95rem; color: #dbdee1; line-height: 1.4; word-break: break-word; }
 
     .dispatch-bar { padding: 0 20px 20px 20px; }
-    .dispatch-bar input {
-      width: 100%;
-      background: var(--bg-input);
-      border: none;
-      padding: 14px 16px;
-      border-radius: 8px;
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-    }
+    .dispatch-bar input { width: 100%; background: var(--bg-input); border: none; padding: 14px 16px; border-radius: 8px; color: white; font-size: 0.95rem; outline: none; }
   </style>
 </head>
 <body>
 
-  <!-- Toast Popup Container -->
   <div id="toast-container"></div>
+
+  <!-- Hidden Audio Element for Mic Loopback Test -->
+  <audio id="loopback-audio" autoplay playsinline style="display:none;"></audio>
 
   <!-- Single-Tab Conflict Modal -->
   <div id="tab-guard-overlay">
-    <div class="tab-guard-box" id="tab-guard-content">
-      <h3 style="margin-bottom: 10px;">Duplicate Tab Detected</h3>
-      <p id="tab-guard-text" style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
+    <div class="tab-guard-box">
+      <h3 style="margin-bottom: 10px;">Duplicate Session Detected</h3>
+      <p style="font-size: 0.88rem; color: var(--text-muted); margin-bottom: 16px;">
         Another tab was opened. Are you sure you want to close this tab and switch to the new one?
       </p>
-      <div id="tab-guard-buttons" style="display: flex; gap: 10px;">
+      <div style="display: flex; gap: 10px;">
         <button class="btn btn-danger" onclick="resolveTabConflict(true)">Yes, Close This Tab</button>
         <button class="btn btn-primary" onclick="resolveTabConflict(false)">No, Keep This Tab</button>
       </div>
     </div>
   </div>
 
-  <!-- ================= 1. DISGUISED STUDY GUIDE VIEW ================= -->
+  <!-- ================= 1. ULTRA-BORING ACADEMIC TEXTBOOK PORTAL ================= -->
   <div id="study-view">
+    <div class="top-banner">
+      <div class="top-banner-inner">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 4px;">
+            State of Washington • Secondary Social Studies Open Educational Resource (OER)
+          </div>
+          <h1 style="font-family: Georgia, serif; font-size: 1.55rem; font-weight: normal;">
+            Washington State Civics, Constitutional Law &amp; Pacific Northwest History
+          </h1>
+          <p style="font-size: 0.84rem; color: #cbd5e1; margin-top: 4px;">
+            Aligned with RCW 28A.230.090 Graduation Requirements &amp; OSPI <em>Since Time Immemorial</em> Curriculum Standards
+          </p>
+        </div>
+        <div style="text-align: right;">
+          <div class="badge-std" style="margin-bottom: 6px;">Catalog ID: OER-WA-910-CIV</div>
+          <div>
+            <button onclick="window.print()" style="padding: 4px 10px; font-size: 0.75rem; background: #e2e8f0; color: #0f172a; border: 1px solid #94a3b8; border-radius: 3px; cursor: pointer;">
+              🖨️ Print Syllabus / PDF
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="tab-btn active" onclick="switchStudyTab(0)">Unit 1: Constitutional Law (1889)</button>
+      <button class="tab-btn" onclick="switchStudyTab(1)">Unit 2: Treaty Law &amp; Sovereignty</button>
+      <button class="tab-btn" onclick="switchStudyTab(2)">Unit 3: RCW Municipal &amp; Judicial Code</button>
+      <button class="tab-btn" onclick="switchStudyTab(3)">Unit 4: Primary Source Vocabulary</button>
+      <button class="tab-btn" onclick="switchStudyTab(4)">Unit 5: Reading Comprehension Check</button>
+    </div>
+
     <div class="study-container">
-      <div class="study-header">
-        <h1>Washington State Civics & PNW History Reference</h1>
-        <p>Unit 4 Curriculum Resource • State Constitutional Structure & Local Governance</p>
+      <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; margin-bottom: 24px; font-size: 0.82rem; color: #475569; font-family: sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap;">
+        <span><strong>Course Requirement:</strong> 0.5 Credit WA State History &amp; Government (WAC 180-51-068)</span>
+        <span><strong>Grade Band:</strong> Grades 7–12 Secondary Archive</span>
+        <span><strong>Last Revised:</strong> Academic Year 2025–2026</span>
       </div>
 
-      <div class="study-section">
-        <h2>I. The Washington State Constitution</h2>
-        <p>Ratified by voters and admitted to the Union as the 42nd state, Washington's governing document establishes a separation of powers across the Executive, Legislative, and Judicial branches.</p>
-        <div class="study-card">
-          <strong>Key Exam Concept:</strong> Article I, Section 7 of the Washington State Constitution provides broader privacy protections concerning "private affairs" than the federal Fourth Amendment.
+      <!-- TAB 0: CONSTITUTION -->
+      <div class="tab-pane active" id="study-tab-0">
+        <div class="study-section">
+          <h2>Section 1.1: The Enabling Act of 1889 &amp; Constitutional Ratification</h2>
+          <p>On February 22, 1889, the United States Congress passed the <strong>Enabling Act of 1889</strong> (25 Stat. 676), authorizing the territories of Washington, Montana, North Dakota, and South Dakota to draft state constitutions and form state governments. Seventy-five delegates convened at the territorial capitol in Olympia on July 4, 1889, laboring for fifty-one days to draft a governing document reflecting late-nineteenth-century Populist and Progressive skepticism toward corporate monopolies and concentrated executive power.</p>
+          <p>Unlike the U.S. Constitution, which functions as a <em>grant of enumerated powers</em> to the federal government, the Washington State Constitution operates as a <em>limitation on plenary state power</em>. Because the state legislature possesses inherent authority to enact statutes unless explicitly restricted, the 1889 framers embedded strict constitutional mandates regarding public finance, common schools, and municipal debt ceilings.</p>
+
+          <div class="study-card">
+            <strong>Primary Source Excerpt — Article I, Section 1 (Political Power):</strong><br>
+            <em>"All political power is inherent in the people, and governments derive their just powers from the consent of the governed, and are established to protect and maintain individual rights."</em>
+          </div>
+
+          <div class="study-card">
+            <strong>Primary Source Excerpt — Article I, Section 7 (Invasion of Private Affairs):</strong><br>
+            <em>"No person shall be disturbed in his private affairs, or his home invaded, without authority of law."</em><br>
+            <span style="font-size: 0.85rem; color: #475569;"><strong>Judicial Note (State v. Gunwall, 1986):</strong> The Washington Supreme Court established six non-exclusive neutral criteria demonstrating that Article I, Section 7 affords broader protection against warrantless searches than the Fourth Amendment to the U.S. Constitution.</span>
+          </div>
+
+          <h3>Section 1.2: Comparative Analysis of Federal and State Branches</h3>
+          <table class="civics-table">
+            <thead>
+              <tr>
+                <th>Constitutional Provision</th>
+                <th>U.S. Constitution (1787)</th>
+                <th>Washington State Constitution (1889)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Executive Branch Structure</strong></td>
+                <td>Unitary Executive: President appoints Cabinet heads with Senate advice and consent (Art. II, Sec. 2).</td>
+                <td>Plural Executive (Art. III, Sec. 1): Nine independently elected officials (Governor, Lt. Governor, Secretary of State, Treasurer, Auditor, Attorney General, Superintendent of Public Instruction, Commissioner of Public Lands, Insurance Commissioner).</td>
+              </tr>
+              <tr>
+                <td><strong>Gubernatorial Veto Power</strong></td>
+                <td>Package Veto Only: President must sign or veto the entire enrolled bill (Art. I, Sec. 7).</td>
+                <td>Partial / Line-Item Veto (Art. III, Sec. 12): Governor may veto individual sections of non-appropriation bills or specific appropriation items, subject to a two-thirds legislative override.</td>
+              </tr>
+              <tr>
+                <td><strong>Citizen Direct Legislation</strong></td>
+                <td>None: All federal legislative authority is vested solely in Congress (Art. I, Sec. 1).</td>
+                <td>Amendment 7 (1912) under Art. II, Sec. 1 reserves the power of the <strong>Initiative</strong> (8% signature threshold) and <strong>Referendum</strong> (4% signature threshold) to registered voters.</td>
+              </tr>
+              <tr>
+                <td><strong>Public Education Mandate</strong></td>
+                <td>Not explicitly enumerated; reserved to states under the Tenth Amendment.</td>
+                <td>Art. IX, Sec. 1 establishes the "paramount duty of the state" to amply fund K–12 basic education, enforced via <em>McCleary v. State of Washington</em>, 173 Wn.2d 477 (2012).</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <h3>Section 1.3: The Bicameral Legislature &amp; Statutory Process</h3>
+          <p>Pursuant to Article II, the Washington State Legislature comprises a <strong>Senate (49 members</strong> serving four-year terms) and a <strong>House of Representatives (98 members</strong> serving two-year terms). Each of the state's 49 legislative districts—redrawn every ten years by a bipartisan five-member Redistricting Commission—elects one Senator and two Representatives (Position 1 and Position 2).</p>
         </div>
       </div>
 
-      <div class="study-section">
-        <h2>II. Legislative Structure & Municipal Codes</h2>
-        <p>The bicameral legislature consists of 49 legislative districts, each electing one senator and two representatives. Local municipalities in Snohomish and King counties operate under First-Class, Second-Class, or Optional Municipal Code classifications.</p>
+      <!-- TAB 1: TREATIES & TIMELINE -->
+      <div class="tab-pane" id="study-tab-1">
+        <div class="study-section">
+          <h2>Section 2.1: Tribal Sovereignty &amp; The Stevens Treaties (1854–1856)</h2>
+          <p>In accordance with RCW 28A.320.170 (the <em>Since Time Immemorial: Tribal Sovereignty in Washington State</em> curriculum), students examine the legal and historical continuity of the twenty-nine federally recognized Indian tribes within Washington.</p>
+          <table class="civics-table">
+            <thead>
+              <tr>
+                <th>Chronology</th>
+                <th>Treaty / Statutory Milestone</th>
+                <th>Signatories &amp; Legal Impact</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Dec 26, 1854</strong></td>
+                <td>Treaty of Medicine Creek (10 Stat. 1132)</td>
+                <td>Negotiated at McAllister Creek with Nisqually, Puyallup, Steilacoom, and Squaxin Island leaders. Reserved the right of taking fish at all "usual and accustomed grounds and stations."</td>
+              </tr>
+              <tr>
+                <td><strong>Jan 22, 1855</strong></td>
+                <td>Treaty of Point Elliott (12 Stat. 927)</td>
+                <td>Signed at Mukilteo (Point Elliott) by Chief Si'ahl (Suquamish/Duwamish), Chief Patkanim (Snoqualmie/Snohomish), Chow-its-hoot (Lummi), and Goliah (Skagit).</td>
+              </tr>
+              <tr>
+                <td><strong>Jan 26, 1855</strong></td>
+                <td>Treaty of Point No Point (12 Stat. 933)</td>
+                <td>Signed at Hahd-skus on the Kitsap Peninsula with S'Klallam, Skokomish, and Chimakum bands.</td>
+              </tr>
+              <tr>
+                <td><strong>Jan 31, 1855</strong></td>
+                <td>Treaty of Neah Bay (12 Stat. 939)</td>
+                <td>Negotiated with the Makah Nation at Cape Flattery, explicitly reserving marine whaling and sealing rights.</td>
+              </tr>
+              <tr>
+                <td><strong>Feb 12, 1974</strong></td>
+                <td><em>United States v. Washington</em>, 384 F. Supp. 312</td>
+                <td>U.S. District Judge George H. Boldt ruled that "in common with" guarantees Treaty Tribes 50% of the harvestable salmon and steelhead returning to usual and accustomed grounds.</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: COUNTIES & MUNICIPAL CODES -->
+      <div class="tab-pane" id="study-tab-2">
+        <div class="study-section">
+          <h2>Section 3.1: County Charters, Municipal Incorporations &amp; Special Districts</h2>
+          <p>Local administration in Washington operates under Article XI of the State Constitution. While thirty-two counties operate under a standard three-member Board of County Commissioners, seven counties—<strong>King (1969), Clallam (1976), Whatcom (1978), Snohomish (1980), Pierce (1981), San Juan (2005), and Clark (2014)</strong>—have adopted <strong>Home Rule Charters</strong> under Article XI, Section 4.</p>
+          <h3>Section 3.2: Washington Judicial Hierarchy (Article IV)</h3>
+          <table class="civics-table">
+            <thead>
+              <tr>
+                <th>Court Tier</th>
+                <th>Jurisdiction &amp; Composition</th>
+                <th>Statutory Authority</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Washington Supreme Court</strong></td>
+                <td>Court of last resort in Olympia; 9 Justices elected statewide to 6-year terms.</td>
+                <td>Art. IV, Sec. 2–4; Chapter 2.04 RCW</td>
+              </tr>
+              <tr>
+                <td><strong>Court of Appeals</strong></td>
+                <td>22 judges across three divisions: Division I (Seattle), Division II (Tacoma), and Division III (Spokane).</td>
+                <td>Art. IV, Sec. 30; Chapter 2.06 RCW</td>
+              </tr>
+              <tr>
+                <td><strong>Superior Courts</strong></td>
+                <td>Courts of general jurisdiction in all 39 counties; felony trials, civil suits, juvenile, and probate matters.</td>
+                <td>Art. IV, Sec. 5–6; Chapter 2.08 RCW</td>
+              </tr>
+              <tr>
+                <td><strong>District &amp; Municipal Courts</strong></td>
+                <td>Courts of limited jurisdiction handling misdemeanors, traffic infractions, and municipal codes.</td>
+                <td>Chapters 3.30 &amp; 3.50 RCW</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 3: INTERACTIVE FLASHCARDS -->
+      <div class="tab-pane" id="study-tab-3">
+        <div class="study-section" style="font-family: sans-serif;">
+          <h2>Section 4.1: Statutory &amp; Constitutional Vocabulary Deck</h2>
+          <p>Use the review module below to prepare for the end-of-unit OSPI Civics Classroom-Based Assessment (CBA).</p>
+          <div class="flashcard-box" onclick="flipFlashcard()">
+            <div style="font-size: 0.78rem; text-transform: uppercase; letter-spacing: 1px; color: #94a3b8; margin-bottom: 8px;" id="fc-side-label">TERM (CLICK TO FLIP)</div>
+            <div style="font-size: 1.25rem; font-weight: 700;" id="fc-content">Article IX, Section 1 (Paramount Duty)</div>
+          </div>
+          <div class="flashcard-controls">
+            <button class="study-btn" onclick="moveFlashcard(-1)">← Previous Term</button>
+            <span id="fc-counter" style="font-weight: 600; color: #475569;">Card 1 of 6</span>
+            <button class="study-btn" onclick="moveFlashcard(1)">Next Term →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: PRACTICE QUIZ -->
+      <div class="tab-pane" id="study-tab-4">
+        <div class="study-section" style="font-family: sans-serif;">
+          <h2>Section 5.1: Unit 4 Formative Reading Check</h2>
+          <div class="quiz-q">
+            <p>1. Where was the Treaty of Point Elliott signed on January 22, 1855?</p>
+            <label class="quiz-opt"><input type="radio" name="q1" value="a"> A) Olympia (Medicine Creek)</label>
+            <label class="quiz-opt"><input type="radio" name="q1" value="b"> B) Mukilteo (Point Elliott)</label>
+            <label class="quiz-opt"><input type="radio" name="q1" value="c"> C) Walla Walla Valley</label>
+          </div>
+          <div class="quiz-q">
+            <p>2. Which decision affirmed that Treaty Tribes are entitled to 50% of the harvestable fish runs in Washington?</p>
+            <label class="quiz-opt"><input type="radio" name="q2" value="a"> A) McCleary v. State of Washington (2012)</label>
+            <label class="quiz-opt"><input type="radio" name="q2" value="b"> B) United States v. Washington / Boldt Decision (1974)</label>
+            <label class="quiz-opt"><input type="radio" name="q2" value="c"> C) Enabling Act of 1889</label>
+          </div>
+          <div class="quiz-q">
+            <p>3. Under a Council-Manager municipal government (Title 35A RCW), who hires the City Manager?</p>
+            <label class="quiz-opt"><input type="radio" name="q3" value="a"> A) The Elected City Council</label>
+            <label class="quiz-opt"><input type="radio" name="q3" value="b"> B) The County Executive</label>
+            <label class="quiz-opt"><input type="radio" name="q3" value="c"> C) The Lieutenant Governor</label>
+          </div>
+          <button class="study-btn" onclick="gradePracticeQuiz()">Submit Formative Check</button>
+          <p id="quiz-result" style="margin-top: 14px; font-weight: 700;"></p>
+        </div>
+      </div>
+
+      <!-- MLA Citation Box -->
+      <div style="margin-top: 32px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 18px; font-size: 0.8rem; color: #475569; font-family: sans-serif;">
+        <strong>Recommended MLA 9th Edition Citation for Student Papers:</strong><br>
+        <em>Washington State Constitutional Law and Treaty Archive: Unit 4 Secondary Reference Guide.</em> Open Educational Resource Portal, Revised 2026. Aligned with RCW 28A.230.090 and OSPI Social Studies Learning Standards.
       </div>
 
       <!-- School Hours Unavailable Message -->
       <div id="unavailable-modal">
-        <strong>Sorry, this resource index is currently unavailable.</strong>
-        <p style="font-size: 0.85rem; margin-top: 4px;">The external contributor database is offline for scheduled daytime maintenance (07:00 – 15:00 Mon–Thu / 07:00 – 14:00 Fri PST). Standard curriculum text remains accessible above.</p>
+        <strong>Sorry, this external appendix is currently unavailable.</strong>
+        <p style="font-size: 0.85rem; margin-top: 4px;">The contributor index server is offline for scheduled daytime maintenance (07:00 – 15:00 Mon–Thu / 07:00 – 14:00 Fri PST). All primary curriculum units remain accessible above.</p>
       </div>
 
       <!-- Disguised Sign-In / Sign-Up Box -->
       <div id="citation-modal">
-        <p style="font-size: 0.85rem; font-weight: bold;">Archive Contributor Portal (Username & Shared Vault Passkey):</p>
+        <p style="font-size: 0.85rem; font-weight: bold;">Appendix Index Lookup (Contributor ID &amp; Shared Archive Key):</p>
         <div class="auth-row">
-          <input type="text" id="username-input" placeholder="Username (e.g. jordan)">
-          <input type="password" id="password-input" placeholder="Shared Vault Passkey">
+          <input type="text" id="username-input" placeholder="Contributor ID">
+          <input type="password" id="password-input" placeholder="Archive Reference Key">
           <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-            <input type="checkbox" id="remember-check" checked> Remember Device
+            <input type="checkbox" id="remember-check" checked> Remember Workstation
           </label>
-          <button onclick="unlockWorkspace(false)">Access Archive</button>
+          <button onclick="unlockWorkspace(false)">Load Appendix</button>
         </div>
       </div>
 
       <div class="study-footer">
-        <span>Curriculum Reference ID: WA-HIST-402</span>
-        <span>Statehood Ratified: November 11, <span id="secret-trigger" onclick="handleTriggerClick()">1889</span></span>
+        <span>OSPI Standard Alignment: C1.9-10 • H2.9-10 • STI Sovereign Curriculum</span>
+        <span>Proclamation 294 Statehood Ratified: November 11, <span id="secret-trigger" onclick="handleTriggerClick()">1889</span></span>
       </div>
     </div>
   </div>
@@ -397,15 +461,16 @@
       <div id="call-controls-section" style="display:none;">
         <h3>Active Link Controls</h3>
         <div class="panel-box">
-          <button class="btn btn-secondary" id="mute-btn" onclick="toggleMic()">Mute Mic</button>
-          <button class="btn btn-secondary" id="cam-btn" onclick="toggleCamera()">Toggle Camera</button>
+          <button class="btn btn-secondary" id="mute-btn" onclick="toggleMic()">🎙️ Mute Mic</button>
+          <button class="btn btn-secondary" id="deafen-btn" onclick="toggleDeafen()">🎧 Deafen Audio</button>
+          <button class="btn btn-secondary" id="cam-btn" onclick="toggleCamera()">📹 Toggle Camera</button>
           <button class="btn btn-primary" id="screen-btn" onclick="toggleScreenShare()">🖥️ Share Screen</button>
           <button class="btn btn-danger" onclick="endActiveCall()">Disconnect Call</button>
         </div>
       </div>
 
       <div>
-        <h3>Hardware Audio & Alerts</h3>
+        <h3>Hardware Audio &amp; Mic Check</h3>
         <div class="panel-box">
           <label style="font-size:0.75rem; color:var(--text-muted);">Microphone Input:</label>
           <select id="audio-input-select" onchange="switchAudioInput()"></select>
@@ -413,27 +478,38 @@
           <label style="font-size:0.75rem; color:var(--text-muted);">Speaker / Earbuds Output:</label>
           <select id="audio-output-select" onchange="switchAudioOutput()"></select>
 
+          <!-- Live Mic Input Meter & Playback Loopback Button -->
+          <div style="display:flex; justify-content:space-between; font-size:0.72rem; color:var(--text-muted); margin-top:4px;">
+            <span>Mic Input Level:</span>
+            <span id="loopback-status-label">Idle</span>
+          </div>
+          <div class="mic-meter-bg">
+            <div class="mic-meter-fill" id="mic-meter-bar"></div>
+          </div>
+          <button class="btn btn-secondary" id="mic-test-btn" onclick="toggleMicLoopbackTest()">🎙️ Let's Check (Mic Playback)</button>
+
           <button class="btn btn-secondary" onclick="enableBrowserNotifications()">🔔 Enable Tab Popups</button>
           <button class="btn btn-secondary" onclick="testSoundEffect()">🎵 Test Ringtone</button>
         </div>
       </div>
 
       <div style="margin-top:auto;">
-        <button class="btn btn-danger" onclick="logoutSession()">Log Out & Clear Auto-Login</button>
+        <button class="btn btn-danger" onclick="logoutSession()">Log Out &amp; Clear Auto-Login</button>
       </div>
     </div>
 
     <div class="main-stage">
       <div class="stage-header">
-        <div style="font-weight: 600;">🔒 E2EE Direct Feed <span id="linked-partner-label" style="color:var(--text-muted); font-size:0.85rem; margin-left:8px;"></span></div>
-        
-        <!-- Discord-Style Search & Sort Bar -->
+        <div>
+          <span style="font-weight: 600;">🔒 E2EE Direct Feed</span>
+          <span id="cloud-status-badge" style="color:var(--warning); font-size:0.78rem; margin-left:10px; font-weight:600;">• Checking Cloud...</span>
+        </div>
         <div class="search-controls">
-          <input type="text" class="search-bar" id="search-input" placeholder="Search (try from:user before:YYYY-MM-DD)" oninput="renderEntries()">
+          <input type="text" class="search-bar" id="search-input" placeholder="Search (from:user before:YYYY-MM-DD)" oninput="renderEntries()">
           <select class="filter-select" id="author-filter" onchange="renderEntries()">
             <option value="all">All Users</option>
           </select>
-          <input type="date" class="filter-select" id="date-filter" onchange="renderEntries()" title="Filter by specific date">
+          <input type="date" class="filter-select" id="date-filter" onchange="renderEntries()">
           <select class="filter-select" id="sort-filter" onchange="renderEntries()">
             <option value="oldest">Oldest → Newest</option>
             <option value="newest">Newest → Oldest</option>
@@ -441,7 +517,6 @@
         </div>
       </div>
 
-      <!-- Video & Screen Share Stage -->
       <div id="media-stage">
         <div class="video-box">
           <video id="local-video" autoplay muted playsinline></video>
@@ -449,7 +524,7 @@
         </div>
         <div class="video-box">
           <video id="remote-video" autoplay playsinline></video>
-          <span class="video-label" id="remote-video-label">Partner Stream</span>
+          <span class="video-label">Partner Stream</span>
         </div>
       </div>
 
@@ -462,7 +537,47 @@
   </div>
 
   <script>
-    // ================= 0. TOAST POPUP HELPER =================
+    // ============================================================================
+    // YOUR FIREBASE REALTIME DATABASE URL (PRE-CONFIGURED!)
+    // ============================================================================
+    const FIREBASE_DB_URL = "https://pancakes-2d3bc-default-rtdb.firebaseio.com"; 
+
+    // ================= 0. STUDY GUIDE TABS, FLASHCARDS & QUIZ =================
+    function switchStudyTab(idx) {
+      document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+      document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+    }
+
+    const flashcards = [
+      { term: "Article IX, Section 1 (Paramount Duty)", def: "Constitutional mandate stating it is the paramount duty of Washington State to amply fund K-12 education for all resident children." },
+      { term: "Treaty of Point Elliott (1855)", def: "Signed at Mukilteo by Chief Si'ahl and Puget Sound Indigenous leaders, reserving sovereignty and usual and accustomed fishing grounds." },
+      { term: "Article I, Section 7 (Private Affairs)", def: "Washington Constitutional clause providing stronger personal privacy and home protection than the federal 4th Amendment." },
+      { term: "Boldt Decision (U.S. v. Washington, 1974)", def: "Federal court ruling affirming that Treaty Tribes hold legal rights to 50% of harvestable salmon/steelhead runs and co-management." },
+      { term: "Council-Manager Municipal Code", def: "Local government framework where an elected City Council sets policy and hires a professional City Manager to oversee operations." },
+      { term: "Initiative & Referendum (Article II)", def: "Direct democracy powers added by voters in 1912 allowing citizens to propose or repeal state laws directly on the ballot." }
+    ];
+    let fcIndex = 0;
+    let fcShowingDef = false;
+
+    function flipFlashcard() { fcShowingDef = !fcShowingDef; renderFlashcard(); }
+    function moveFlashcard(dir) { fcIndex = (fcIndex + dir + flashcards.length) % flashcards.length; fcShowingDef = false; renderFlashcard(); }
+    function renderFlashcard() {
+      document.getElementById('fc-side-label').innerText = fcShowingDef ? "DEFINITION (CLICK TO FLIP)" : "TERM (CLICK TO FLIP)";
+      document.getElementById('fc-content').innerText = fcShowingDef ? flashcards[fcIndex].def : flashcards[fcIndex].term;
+      document.getElementById('fc-counter').innerText = `Card ${fcIndex + 1} of ${flashcards.length}`;
+    }
+
+    function gradePracticeQuiz() {
+      let score = 0;
+      if (document.querySelector('input[name="q1"]:checked')?.value === 'b') score++;
+      if (document.querySelector('input[name="q2"]:checked')?.value === 'b') score++;
+      if (document.querySelector('input[name="q3"]:checked')?.value === 'a') score++;
+      const res = document.getElementById('quiz-result');
+      res.style.color = score === 3 ? '#15803d' : '#1e3a8a';
+      res.innerText = `Assessment Score: ${score} / 3 Correct (${Math.round((score/3)*100)}%)`;
+    }
+
+    // ================= 1. TOAST & SINGLE-TAB ENFORCEMENT =================
     function showToast(text, isError = true) {
       const container = document.getElementById('toast-container');
       const div = document.createElement('div');
@@ -473,30 +588,24 @@
       setTimeout(() => div.remove(), 4500);
     }
 
-    // ================= 1. SINGLE-TAB ENFORCEMENT (BROADCAST CHANNEL) =================
     const tabChannel = new BroadcastChannel('wa_civics_single_tab_guard');
     let isWaitingForTabApproval = false;
 
     tabChannel.onmessage = (e) => {
       if (e.data.type === 'NEW_TAB_OPENED' && !isWaitingForTabApproval) {
-        // Show prompt in the ORIGINAL tab
         document.getElementById('tab-guard-overlay').style.display = 'flex';
       } else if (e.data.type === 'ALLOW_NEW_TAB' && isWaitingForTabApproval) {
-        // Original tab agreed to close; unlock this new tab
         isWaitingForTabApproval = false;
         document.getElementById('tab-guard-overlay').style.display = 'none';
       } else if (e.data.type === 'REJECT_NEW_TAB' && isWaitingForTabApproval) {
-        // Original tab said NO; lock/close this new tab
         document.body.innerHTML = '<div style="padding:40px;font-family:sans-serif;">Session active in original tab. You may close this tab.</div>';
         window.close();
       }
     };
 
-    // Ping existing tabs on startup
     window.addEventListener('DOMContentLoaded', () => {
       isWaitingForTabApproval = true;
       tabChannel.postMessage({ type: 'NEW_TAB_OPENED' });
-      // If no existing tab responds within 300ms, we are the only tab
       setTimeout(() => { isWaitingForTabApproval = false; }, 300);
     });
 
@@ -513,25 +622,18 @@
     }
 
     // ================= 2. WA SCHOOL HOURS LOCKDOWN & 3-SEC CLICK TIMER =================
-    // Mon-Thu: 7:00 AM to 3:00 PM (15:00) | Fri: 7:00 AM to 2:00 PM (14:00)
     function isDuringSchoolLockdown() {
       const now = new Date();
-      const day = now.getDay(); // 0 = Sun, 1 = Mon ... 5 = Fri, 6 = Sat
+      const day = now.getDay();
       const hour = now.getHours();
-
-      if (day >= 1 && day <= 4) {
-        // Monday - Thursday: 7:00 AM to 2:59:59 PM
-        return (hour >= 7 && hour < 15);
-      } else if (day === 5) {
-        // Friday: 7:00 AM to 1:59:59 PM
-        return (hour >= 7 && hour < 14);
-      }
-      return false; // Sat & Sun unlocked
+      if (day >= 1 && day <= 4) return (hour >= 7 && hour < 15);
+      if (day === 5) return (hour >= 7 && hour < 14);
+      return false;
     }
 
-    // Auto-check every 15 seconds in case 7:00 AM hits while open
     setInterval(() => {
       if (isDuringSchoolLockdown() && document.getElementById('app-view').style.display === 'flex') {
+        stopMicLoopbackTest();
         endActiveCall();
         document.getElementById('app-view').style.display = 'none';
         document.getElementById('study-view').style.display = 'block';
@@ -544,23 +646,17 @@
 
     function handleTriggerClick() {
       const now = Date.now();
-      // Reset back to 0 if more than 3 seconds (3000ms) elapsed since last click
-      if (now - lastClickTimestamp > 3000) {
-        triggerClicks = 0;
-      }
+      if (now - lastClickTimestamp > 3000) triggerClicks = 0;
       lastClickTimestamp = now;
       triggerClicks++;
 
       if (triggerClicks >= 3) {
         triggerClicks = 0;
-
-        // Enforce School Hours Lockdown
         if (isDuringSchoolLockdown()) {
           document.getElementById('unavailable-modal').style.display = 'block';
           document.getElementById('citation-modal').style.display = 'none';
           return;
         }
-
         document.getElementById('unavailable-modal').style.display = 'none';
         const savedSession = localStorage.getItem('wa_civics_saved_auth');
         if (savedSession) {
@@ -574,9 +670,9 @@
       }
     }
 
-    // Panic Button (ESC key)
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && document.getElementById('app-view').style.display === 'flex') {
+        stopMicLoopbackTest();
         document.getElementById('app-view').style.display = 'none';
         document.getElementById('study-view').style.display = 'block';
         document.getElementById('citation-modal').style.display = 'none';
@@ -589,7 +685,7 @@
       location.reload();
     }
 
-    // ================= 3. SYNTHESIZED RINGTONE & PING SOUNDS =================
+    // ================= 3. SYNTHESIZED RINGTONE & NOTIFICATIONS =================
     const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     let ringtoneInterval = null;
 
@@ -634,23 +730,15 @@
     }
 
     function stopRingtone() {
-      if (ringtoneInterval) {
-        clearInterval(ringtoneInterval);
-        ringtoneInterval = null;
-      }
+      if (ringtoneInterval) { clearInterval(ringtoneInterval); ringtoneInterval = null; }
     }
 
-    function testSoundEffect() {
-      playRingtoneBurst();
-    }
+    function testSoundEffect() { playRingtoneBurst(); }
 
-    // ================= 4. DESKTOP / BACKGROUND TAB NOTIFICATIONS =================
     function enableBrowserNotifications() {
       if (!("Notification" in window)) return showToast("Browser notifications not supported.");
       Notification.requestPermission().then(perm => {
-        if (perm === "granted") {
-          showToast("Background tab notifications enabled!", false);
-        }
+        if (perm === "granted") showToast("Background tab notifications enabled!", false);
       });
     }
 
@@ -673,13 +761,18 @@
       }
     }
 
-    // ================= 5. E2EE CRYPTO ENGINE (AES-256-GCM) =================
+    // ================= 4. E2EE CRYPTO ENGINE & FIREBASE CLOUD VERIFIER =================
     let cryptoKey = null;
+    let vaultRoomHash = "default_vault";
     let myUsername = "";
     let decryptedLogs = [];
+    let knownTimestamps = new Set();
 
-    async function deriveKey(passphrase) {
+    async function deriveKeyAndVaultHash(passphrase) {
       const enc = new TextEncoder();
+      const hashBuf = await window.crypto.subtle.digest("SHA-256", enc.encode("vault-id-" + passphrase));
+      vaultRoomHash = Array.from(new Uint8Array(hashBuf)).slice(0, 8).map(b => b.toString(16).padStart(2, '0')).join('');
+
       const keyMaterial = await window.crypto.subtle.importKey(
         "raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]
       );
@@ -696,7 +789,7 @@
       const iv = window.crypto.getRandomValues(new Uint8Array(12));
       const encoded = new TextEncoder().encode(JSON.stringify(plainObj));
       const cipherBuf = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, cryptoKey, encoded);
-      return { iv: Array.from(iv), data: Array.from(new Uint8Array(cipherBuf)) };
+      return { iv: Array.from(iv), data: Array.from(new Uint8Array(cipherBuf)), ts: plainObj.timestamp };
     }
 
     async function decryptPayload(payload) {
@@ -710,7 +803,80 @@
       }
     }
 
-    // ================= 6. WORKSPACE UNLOCK & DISCORD-STYLE SEARCH =================
+    function getCleanFirebaseUrl() {
+      if (!FIREBASE_DB_URL || !FIREBASE_DB_URL.trim()) return null;
+      return FIREBASE_DB_URL.trim().replace(/\/$/, '') + `/archives/${vaultRoomHash}.json`;
+    }
+
+    async function pushEncryptedToFirebase(encryptedItem) {
+      const url = getCleanFirebaseUrl();
+      if (!url) return;
+      const badge = document.getElementById('cloud-status-badge');
+      try {
+        const res = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(encryptedItem)
+        });
+        if (res.ok) {
+          badge.style.color = 'var(--success)';
+          badge.innerText = '• ☁️ Cloud Sync Verified';
+        } else {
+          badge.style.color = 'var(--danger)';
+          badge.innerText = `• ⚠️ Cloud Denied (HTTP ${res.status} - Check Rules)`;
+        }
+      } catch (e) {
+        badge.style.color = 'var(--danger)';
+        badge.innerText = '• ⚠️ Cloud Network Error';
+      }
+    }
+
+    async function syncFromFirebaseCloud(isInitial = false) {
+      const url = getCleanFirebaseUrl();
+      const badge = document.getElementById('cloud-status-badge');
+      if (!url) {
+        badge.style.color = 'var(--warning)';
+        badge.innerText = "• Local P2P Mode";
+        return;
+      }
+      try {
+        const res = await fetch(url);
+        if (!res.ok) {
+          badge.style.color = 'var(--danger)';
+          badge.innerText = `• ⚠️ Cloud Rules Blocked (HTTP ${res.status})`;
+          return;
+        }
+        badge.style.color = 'var(--success)';
+        badge.innerText = "• ☁️ Cloud Sync Verified";
+
+        const data = await res.json();
+        if (!data) return;
+
+        let addedNew = false;
+        for (const key in data) {
+          const encItem = data[key];
+          const msg = await decryptPayload(encItem);
+          if (msg && !knownTimestamps.has(msg.timestamp)) {
+            knownTimestamps.add(msg.timestamp);
+            decryptedLogs.push(msg);
+            addedNew = true;
+            if (!isInitial && msg.author !== myUsername) {
+              playPingSound();
+              triggerPopupAlert(`Automated Notifier (@${msg.author})`, msg.text);
+            }
+          }
+        }
+        if (addedNew) {
+          updateAuthorFilterDropdown();
+          renderEntries();
+        }
+      } catch (e) {
+        badge.style.color = 'var(--danger)';
+        badge.innerText = "• ⚠️ Invalid Firebase URL";
+      }
+    }
+
+    // ================= 5. WORKSPACE UNLOCK & SEARCH =================
     async function unlockWorkspace(isAuto) {
       if (isDuringSchoolLockdown()) {
         document.getElementById('unavailable-modal').style.display = 'block';
@@ -718,10 +884,10 @@
       }
       const rawUser = document.getElementById('username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
       const pass = document.getElementById('password-input').value.trim();
-      if (!rawUser || !pass) return showToast("Enter both Username and Shared Vault Passkey.");
+      if (!rawUser || !pass) return showToast("Enter both Contributor ID and Archive Key.");
 
       myUsername = rawUser;
-      cryptoKey = await deriveKey(pass);
+      cryptoKey = await deriveKeyAndVaultHash(pass);
 
       if (!isAuto && document.getElementById('remember-check').checked) {
         localStorage.setItem('wa_civics_saved_auth', JSON.stringify({ username: myUsername, passkey: pass }));
@@ -737,6 +903,9 @@
       document.getElementById('app-view').style.display = 'flex';
 
       await loadStoredEntries();
+      await syncFromFirebaseCloud(true);
+      setInterval(() => syncFromFirebaseCloud(false), 2800);
+
       initPeerWithUsername();
       loadAudioDevices();
     }
@@ -744,9 +913,13 @@
     async function loadStoredEntries() {
       const raw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
       decryptedLogs = [];
+      knownTimestamps.clear();
       for (const item of raw) {
         const entry = await decryptPayload(item);
-        if (entry) decryptedLogs.push(entry);
+        if (entry && !knownTimestamps.has(entry.timestamp)) {
+          knownTimestamps.add(entry.timestamp);
+          decryptedLogs.push(entry);
+        }
       }
       updateAuthorFilterDropdown();
       renderEntries();
@@ -767,10 +940,12 @@
     }
 
     async function saveAndRenderEntry(entryObj, broadcast = true) {
-      if (!entryObj.isoDate) {
-        entryObj.isoDate = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
-        entryObj.timestamp = Date.now();
-      }
+      if (!entryObj.isoDate) entryObj.isoDate = new Date().toISOString().split('T')[0];
+      if (!entryObj.timestamp) entryObj.timestamp = Date.now() + Math.floor(Math.random() * 999);
+
+      if (knownTimestamps.has(entryObj.timestamp)) return;
+      knownTimestamps.add(entryObj.timestamp);
+
       decryptedLogs.push(entryObj);
       updateAuthorFilterDropdown();
       renderEntries();
@@ -780,8 +955,11 @@
       raw.push(encrypted);
       localStorage.setItem('wa_civics_e2ee_logs_v2', JSON.stringify(raw));
 
-      if (broadcast && dataConn && dataConn.open) {
-        dataConn.send({ type: 'entry', payload: encrypted });
+      if (broadcast) {
+        pushEncryptedToFirebase(encrypted);
+        if (dataConn && dataConn.open) {
+          dataConn.send({ type: 'entry', payload: encrypted });
+        }
       }
     }
 
@@ -792,12 +970,11 @@
         text: noticeText,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isoDate: new Date().toISOString().split('T')[0],
-        timestamp: Date.now()
+        timestamp: Date.now() + Math.floor(Math.random() * 999)
       };
       saveAndRenderEntry(botEntry, broadcast);
     }
 
-    // Supports Discord search tokens: from:user, before:YYYY-MM-DD, after:YYYY-MM-DD, on:YYYY-MM-DD
     function renderEntries() {
       const list = document.getElementById('entries-list');
       let rawQuery = document.getElementById('search-input').value.trim().toLowerCase();
@@ -806,7 +983,6 @@
       const sortOrder = document.getElementById('sort-filter').value;
 
       let tokenFrom = null, tokenBefore = null, tokenAfter = null, tokenOn = null;
-
       rawQuery = rawQuery.replace(/from:([a-z0-9_-]+)/g, (_, u) => { tokenFrom = u; return ''; });
       rawQuery = rawQuery.replace(/before:(\d{4}-\d{2}-\d{2})/g, (_, d) => { tokenBefore = d; return ''; });
       rawQuery = rawQuery.replace(/after:(\d{4}-\d{2}-\d{2})/g, (_, d) => { tokenAfter = d; return ''; });
@@ -816,7 +992,6 @@
       let results = decryptedLogs.filter(m => {
         const entryDate = m.isoDate || new Date().toISOString().split('T')[0];
         const entryAuthor = m.author.toLowerCase();
-
         if (dropdownAuthor !== 'all' && entryAuthor !== dropdownAuthor) return false;
         if (tokenFrom && entryAuthor !== tokenFrom) return false;
         if (datePickerVal && entryDate !== datePickerVal) return false;
@@ -827,11 +1002,7 @@
         return true;
       });
 
-      results.sort((a, b) => {
-        const tA = a.timestamp || 0;
-        const tB = b.timestamp || 0;
-        return sortOrder === 'newest' ? (tB - tA) : (tA - tB);
-      });
+      results.sort((a, b) => sortOrder === 'newest' ? (b.timestamp - a.timestamp) : (a.timestamp - b.timestamp));
 
       list.innerHTML = '';
       results.forEach(m => {
@@ -860,7 +1031,7 @@
         text: text,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         isoDate: new Date().toISOString().split('T')[0],
-        timestamp: Date.now()
+        timestamp: Date.now() + Math.floor(Math.random() * 999)
       };
       saveAndRenderEntry(entryObj, true);
     }
@@ -869,18 +1040,25 @@
       return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
     }
 
-    // ================= 7. USERNAME-BASED PEERJS & SYNC =================
+    // ================= 6. USERNAME PEERJS, DEAFEN & MIC LOOPBACK PLAYBACK =================
     const PEER_PREFIX = "wa-civics-archive-v2-";
     let peer = null;
     let dataConn = null;
     let activeCall = null;
     let pendingIncomingCall = null;
     let localStream = null;
+    let micAnalyserInterval = null;
+
+    // Deafen & Loopback state trackers
+    let isDeafened = false;
+    let isLoopbackTesting = false;
+    let loopbackStream = null;
+    let preTestMicEnabled = true;
+    let preTestDeafened = false;
 
     function initPeerWithUsername() {
       if (peer) peer.destroy();
-      const myFullPeerId = PEER_PREFIX + myUsername;
-      peer = new Peer(myFullPeerId);
+      peer = new Peer(PEER_PREFIX + myUsername);
 
       peer.on('open', () => {
         document.getElementById('conn-status').innerText = 'Online (@' + myUsername + ')';
@@ -888,9 +1066,7 @@
         if (savedTarget) connectByUsername(true);
       });
 
-      peer.on('connection', (conn) => {
-        setupDataChannel(conn);
-      });
+      peer.on('connection', (conn) => setupDataChannel(conn));
 
       peer.on('call', (call) => {
         pendingIncomingCall = call;
@@ -901,7 +1077,7 @@
 
       peer.on('error', (err) => {
         if (err.type === 'peer-unavailable') {
-          document.getElementById('conn-status').innerText = 'Friend Offline (Saved Locally)';
+          document.getElementById('conn-status').innerText = 'Partner Offline (Cloud Sync Ready)';
         }
       });
     }
@@ -910,8 +1086,6 @@
       const targetUser = document.getElementById('target-username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
       if (!targetUser) return;
       localStorage.setItem('wa_civics_last_partner', targetUser);
-      document.getElementById('linked-partner-label').innerText = `• Linked with @${targetUser}`;
-
       const conn = peer.connect(PEER_PREFIX + targetUser);
       setupDataChannel(conn, silent);
     }
@@ -921,45 +1095,27 @@
       dataConn.on('open', async () => {
         document.getElementById('conn-dot').classList.add('status-online');
         document.getElementById('conn-status').innerText = 'Direct Link Active';
-
-        const raw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
-        dataConn.send({ type: 'history_sync', logs: raw });
-
-        if (!silent) {
-          pushAutomatedNotifier(`@${myUsername} connected to the live room.`, true);
-        }
+        if (!silent) pushAutomatedNotifier(`@${myUsername} connected to the live room.`, true);
       });
 
       dataConn.on('data', async (packet) => {
         if (packet.type === 'entry') {
           const msg = await decryptPayload(packet.payload);
-          if (msg) {
+          if (msg && !knownTimestamps.has(msg.timestamp)) {
             saveAndRenderEntry(msg, false);
             playPingSound();
             triggerPopupAlert(`Automated Notifier (@${msg.author})`, msg.text);
           }
-        } else if (packet.type === 'history_sync') {
-          const localRaw = JSON.parse(localStorage.getItem('wa_civics_e2ee_logs_v2') || '[]');
-          if (packet.logs.length > localRaw.length) {
-            localStorage.setItem('wa_civics_e2ee_logs_v2', JSON.stringify(packet.logs));
-            await loadStoredEntries();
-          }
         }
       });
     }
-
-    // ================= 8. CAMERA/MIC HARDWARE SAFE STREAMING =================
-    let micAnalyserInterval = null;
 
     async function getMediaStream(withVideo = false) {
       const audioSource = document.getElementById('audio-input-select').value;
       const audioConstraint = audioSource ? { deviceId: { exact: audioSource } } : true;
 
       try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: audioConstraint,
-          video: withVideo
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraint, video: withVideo });
         setupMicSpeakingIndicator(stream);
         return stream;
       } catch (err) {
@@ -981,40 +1137,150 @@
     function setupMicSpeakingIndicator(stream) {
       if (micAnalyserInterval) clearInterval(micAnalyserInterval);
       if (audioCtx.state === 'suspended') audioCtx.resume();
-
       const source = audioCtx.createMediaStreamSource(stream);
       const analyser = audioCtx.createAnalyser();
       analyser.fftSize = 256;
       source.connect(analyser);
-
       const dataArray = new Uint8Array(analyser.frequencyBinCount);
       const avatarEl = document.getElementById('my-avatar');
+      const meterBar = document.getElementById('mic-meter-bar');
 
       micAnalyserInterval = setInterval(() => {
         const audioTrack = stream.getAudioTracks()[0];
-        if (!audioTrack || !audioTrack.enabled) {
+        if (!audioTrack || (!audioTrack.enabled && !isLoopbackTesting)) {
           avatarEl.classList.remove('speaking-active');
+          if (meterBar) meterBar.style.width = '0%';
           return;
         }
         analyser.getByteFrequencyData(dataArray);
         const avgVolume = dataArray.reduce((a, b) => a + b, 0) / dataArray.length;
-        if (avgVolume > 18) {
-          avatarEl.classList.add('speaking-active');
-        } else {
-          avatarEl.classList.remove('speaking-active');
+        avatarEl.classList.toggle('speaking-active', avgVolume > 16);
+        if (meterBar) {
+          const pct = Math.min(100, Math.round((avgVolume / 85) * 100));
+          meterBar.style.width = pct + '%';
         }
-      }, 80);
+      }, 65);
     }
 
+    // ================= MIC PLAYBACK TEST MODE (AUTO-MUTE & AUTO-DEAFEN IN CALL) =================
+    async function toggleMicLoopbackTest() {
+      if (isLoopbackTesting) {
+        stopMicLoopbackTest();
+      } else {
+        await startMicLoopbackTest();
+      }
+    }
+
+   // ================= FIXED STUDIO-GRADE MIC PLAYBACK TEST =================
+    let loopbackSourceNode = null;
+    let loopbackGainNode = null;
+
+    async function startMicLoopbackTest() {
+      const btn = document.getElementById('mic-test-btn');
+      const statusLbl = document.getElementById('loopback-status-label');
+
+      try {
+        if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+        const audioSource = document.getElementById('audio-input-select').value;
+        const audioConstraints = {
+          echoCancellation: false,
+          noiseSuppression: false,
+          autoGainControl: false,
+          channelCount: 1
+        };
+        if (audioSource && audioSource !== 'default') {
+          audioConstraints.deviceId = { exact: audioSource };
+        }
+
+        loopbackStream = await navigator.mediaDevices.getUserMedia({
+          audio: audioConstraints,
+          video: false
+        });
+
+        isLoopbackTesting = true;
+
+        if (localStream && localStream.getAudioTracks()[0]) {
+          preTestMicEnabled = localStream.getAudioTracks()[0].enabled;
+          localStream.getAudioTracks()[0].enabled = false;
+          document.getElementById('mute-btn').innerText = '🎙️ Muted (Mic Test Active)';
+        }
+        preTestDeafened = isDeafened;
+        document.getElementById('remote-video').muted = true;
+
+        loopbackSourceNode = audioCtx.createMediaStreamSource(loopbackStream);
+        loopbackGainNode = audioCtx.createGain();
+        loopbackGainNode.gain.value = 1.0;
+
+        loopbackSourceNode.connect(loopbackGainNode);
+        loopbackGainNode.connect(audioCtx.destination);
+
+        setupMicSpeakingIndicator(loopbackStream);
+
+        const outId = document.getElementById('audio-output-select').value;
+        if (outId && typeof audioCtx.setSinkId === 'function') {
+          await audioCtx.setSinkId(outId);
+        }
+
+        btn.className = 'btn btn-warning';
+        btn.innerText = '🛑 Stop Mic Playback Test';
+        statusLbl.style.color = 'var(--warning)';
+        statusLbl.innerText = 'Studio Loopback Active';
+        showToast("🎧 Studio Mic Playback Active: Raw mic audio (Echo Gate OFF).", false);
+      } catch (err) {
+        showToast("⚠️ Could not start Mic Playback: " + err.message);
+      }
+    }
+
+    function stopMicLoopbackTest() {
+      if (!isLoopbackTesting) return;
+      isLoopbackTesting = false;
+
+      const btn = document.getElementById('mic-test-btn');
+      const statusLbl = document.getElementById('loopback-status-label');
+
+      if (loopbackSourceNode) {
+        loopbackSourceNode.disconnect();
+        loopbackSourceNode = null;
+      }
+      if (loopbackGainNode) {
+        loopbackGainNode.disconnect();
+        loopbackGainNode = null;
+      }
+      if (loopbackStream) {
+        loopbackStream.getTracks().forEach(t => t.stop());
+        loopbackStream = null;
+      }
+
+      if (localStream && localStream.getAudioTracks()[0]) {
+        localStream.getAudioTracks()[0].enabled = preTestMicEnabled;
+        document.getElementById('mute-btn').innerText = preTestMicEnabled ? '🎙️ Mute Mic' : '🎙️ Unmute Mic (Muted)';
+        setupMicSpeakingIndicator(localStream);
+      } else {
+        if (micAnalyserInterval) clearInterval(micAnalyserInterval);
+        document.getElementById('my-avatar').classList.remove('speaking-active');
+        document.getElementById('mic-meter-bar').style.width = '0%';
+      }
+
+      isDeafened = preTestDeafened;
+      document.getElementById('remote-video').muted = isDeafened;
+
+      btn.className = 'btn btn-secondary';
+      btn.innerText = "🎙️ Let's Check (Mic Playback)";
+      statusLbl.style.color = 'var(--text-muted)';
+      statusLbl.innerText = 'Idle';
+    }
+
+    // ================= CALL & DEAFEN CONTROLS =================
     async function initiateDirectCall(withVideo) {
       const targetUser = document.getElementById('target-username-input').value.trim().toLowerCase().replace(/[^a-z0-9]/g, '');
       if (!targetUser) return showToast("Enter your friend's username first!");
+      if (isLoopbackTesting) stopMicLoopbackTest();
 
       try {
         localStream = await getMediaStream(withVideo);
         document.getElementById('local-video').srcObject = localStream;
         document.getElementById('media-stage').style.display = 'flex';
-
         pushAutomatedNotifier(`@${myUsername} started ringing @${targetUser}...`, true);
         const call = peer.call(PEER_PREFIX + targetUser, localStream);
         bindCallEvents(call);
@@ -1025,6 +1291,7 @@
       stopRingtone();
       document.getElementById('incoming-alert').style.display = 'none';
       if (!pendingIncomingCall) return;
+      if (isLoopbackTesting) stopMicLoopbackTest();
 
       try {
         localStream = await getMediaStream(false);
@@ -1039,34 +1306,50 @@
     function declineIncomingCall() {
       stopRingtone();
       document.getElementById('incoming-alert').style.display = 'none';
-      if (pendingIncomingCall) {
-        pendingIncomingCall.close();
-        pendingIncomingCall = null;
-      }
+      if (pendingIncomingCall) { pendingIncomingCall.close(); pendingIncomingCall = null; }
     }
 
     function bindCallEvents(call) {
       activeCall = call;
       document.getElementById('call-controls-section').style.display = 'block';
-
       call.on('stream', (remoteStream) => {
         const remoteVid = document.getElementById('remote-video');
         remoteVid.srcObject = remoteStream;
+        remoteVid.muted = isDeafened || isLoopbackTesting;
         document.getElementById('media-stage').style.display = 'flex';
         document.getElementById('conn-status').innerText = 'In Direct Call 🎙️';
       });
-
-      call.on('close', () => {
-        endActiveCall();
-      });
+      call.on('close', () => endActiveCall());
     }
 
     function toggleMic() {
       if (!localStream) return;
+      if (isLoopbackTesting) stopMicLoopbackTest();
       const track = localStream.getAudioTracks()[0];
       if (!track) return;
       track.enabled = !track.enabled;
-      document.getElementById('mute-btn').innerText = track.enabled ? 'Mute Mic' : 'Unmute Mic (Muted)';
+      document.getElementById('mute-btn').innerText = track.enabled ? '🎙️ Mute Mic' : '🎙️ Unmute Mic (Muted)';
+    }
+
+    function toggleDeafen() {
+      if (!localStream) return;
+      if (isLoopbackTesting) stopMicLoopbackTest();
+      isDeafened = !isDeafened;
+      document.getElementById('remote-video').muted = isDeafened;
+
+      // Just like Discord, deafening also mutes your mic
+      const track = localStream.getAudioTracks()[0];
+      if (track && isDeafened) {
+        track.enabled = false;
+        document.getElementById('mute-btn').innerText = '🎙️ Unmute Mic (Muted)';
+      } else if (track && !isDeafened) {
+        track.enabled = true;
+        document.getElementById('mute-btn').innerText = '🎙️ Mute Mic';
+      }
+
+      const deafBtn = document.getElementById('deafen-btn');
+      deafBtn.className = isDeafened ? 'btn btn-danger' : 'btn btn-secondary';
+      deafBtn.innerText = isDeafened ? '🔇 Undeafen (Deafened)' : '🎧 Deafen Audio';
     }
 
     async function toggleCamera() {
@@ -1074,7 +1357,7 @@
       const videoTrack = localStream.getVideoTracks()[0];
       if (videoTrack) {
         videoTrack.enabled = !videoTrack.enabled;
-        document.getElementById('cam-btn').innerText = videoTrack.enabled ? 'Disable Camera' : 'Enable Camera';
+        document.getElementById('cam-btn').innerText = videoTrack.enabled ? '📹 Disable Camera' : '📹 Enable Camera';
       } else {
         try {
           const camStream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -1086,11 +1369,7 @@
             if (sender) sender.replaceTrack(newVideoTrack);
           }
         } catch (err) {
-          if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-            showToast("⚠️ Camera Device Not Found: Your desktop does not have a webcam connected.");
-          } else {
-            showToast(`⚠️ Could not enable camera: ${err.message}`);
-          }
+          showToast("⚠️ Camera Device Not Found: Your desktop does not have a webcam connected.");
         }
       }
     }
@@ -1100,54 +1379,40 @@
       try {
         const screenStream = await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
         const screenTrack = screenStream.getVideoTracks()[0];
-
         document.getElementById('local-video').srcObject = screenStream;
         document.getElementById('media-stage').style.display = 'flex';
-
         const sender = activeCall.peerConnection.getSenders().find(s => s.track && s.track.kind === 'video');
-        if (sender) {
-          sender.replaceTrack(screenTrack);
-        } else {
-          activeCall.peerConnection.addTrack(screenTrack, localStream);
-        }
-
-        screenTrack.onended = () => {
-          document.getElementById('local-video').srcObject = localStream;
-        };
-      } catch (e) {
-        showToast("Screen share cancelled.", false);
-      }
+        if (sender) sender.replaceTrack(screenTrack);
+        else activeCall.peerConnection.addTrack(screenTrack, localStream);
+        screenTrack.onended = () => { document.getElementById('local-video').srcObject = localStream; };
+      } catch (e) { showToast("Screen share cancelled.", false); }
     }
 
     function endActiveCall() {
       if (activeCall) activeCall.close();
       if (localStream) localStream.getTracks().forEach(t => t.stop());
-      if (micAnalyserInterval) clearInterval(micAnalyserInterval);
-      document.getElementById('my-avatar').classList.remove('speaking-active');
+      localStream = null;
+      if (!isLoopbackTesting) {
+        if (micAnalyserInterval) clearInterval(micAnalyserInterval);
+        document.getElementById('my-avatar').classList.remove('speaking-active');
+        document.getElementById('mic-meter-bar').style.width = '0%';
+      }
       document.getElementById('media-stage').style.display = 'none';
       document.getElementById('call-controls-section').style.display = 'none';
       document.getElementById('conn-status').innerText = 'Direct Link Active';
     }
 
-    // ================= 9. MIC & EARBUDS DEVICE SWITCHER =================
     async function loadAudioDevices() {
       try {
         const devices = await navigator.mediaDevices.enumerateDevices();
         const inSelect = document.getElementById('audio-input-select');
         const outSelect = document.getElementById('audio-output-select');
-        inSelect.innerHTML = '';
-        outSelect.innerHTML = '';
-
+        inSelect.innerHTML = ''; outSelect.innerHTML = '';
         devices.forEach(d => {
           const opt = document.createElement('option');
           opt.value = d.deviceId;
-          if (d.kind === 'audioinput') {
-            opt.text = d.label || `Microphone ${inSelect.length + 1}`;
-            inSelect.appendChild(opt);
-          } else if (d.kind === 'audiooutput') {
-            opt.text = d.label || `Speaker / Earbuds ${outSelect.length + 1}`;
-            outSelect.appendChild(opt);
-          }
+          if (d.kind === 'audioinput') { opt.text = d.label || `Microphone ${inSelect.length + 1}`; inSelect.appendChild(opt); }
+          else if (d.kind === 'audiooutput') { opt.text = d.label || `Speaker / Earbuds ${outSelect.length + 1}`; outSelect.appendChild(opt); }
         });
       } catch (e) {}
     }
@@ -1155,6 +1420,11 @@
     navigator.mediaDevices.ondevicechange = () => loadAudioDevices();
 
     async function switchAudioInput() {
+      if (isLoopbackTesting) {
+        stopMicLoopbackTest();
+        await startMicLoopbackTest();
+        return;
+      }
       if (!localStream) return;
       const newStream = await getMediaStream(localStream.getVideoTracks().length > 0);
       const newAudioTrack = newStream.getAudioTracks()[0];
@@ -1168,9 +1438,9 @@
     async function switchAudioOutput() {
       const outId = document.getElementById('audio-output-select').value;
       const remoteVid = document.getElementById('remote-video');
-      if (typeof remoteVid.sinkId !== 'undefined') {
-        await remoteVid.setSinkId(outId);
-      }
+      const loopbackAudio = document.getElementById('loopback-audio');
+      if (typeof remoteVid.sinkId !== 'undefined') await remoteVid.setSinkId(outId);
+      if (typeof loopbackAudio.sinkId !== 'undefined') await loopbackAudio.setSinkId(outId);
     }
   </script>
 </body>
