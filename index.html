@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Washington State Civics, Constitutional Law & Pacific Northwest History</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js"></script>
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
@@ -285,7 +285,7 @@
     <div class="study-container">
       <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 10px 14px; margin-bottom: 24px; font-size: 0.82rem; color: #475569; font-family: sans-serif; display: flex; justify-content: space-between; flex-wrap: wrap;">
         <span><strong>Course Requirement:</strong> 0.5 Credit WA State History (WAC 180-51-068)</span>
-        <span><strong>Edition:</strong> V7.82 Supabase GB Scalable Archive</span>
+        <span><strong>Edition:</strong> V7.88 Permanent Archive Edition</span>
         <span><strong>Last Revised:</strong> October 2026</span>
       </div>
 
@@ -416,13 +416,13 @@
       <!-- MLA Citation Box -->
       <div style="margin-top: 32px; background: #f8fafc; border: 1px solid #cbd5e1; padding: 14px 18px; font-size: 0.8rem; color: #475569; font-family: sans-serif;">
         <strong>Recommended MLA 9th Edition Citation for Student Papers:</strong><br>
-        <em>Washington State Constitutional Law and Treaty Archive: V7.82 Supabase Edition.</em> Open Educational Resource Portal, Revised October 2026. Aligned with RCW 28A.230.090 and OSPI Social Studies Learning Standards.
+        <em>Washington State Constitutional Law and Treaty Archive: V7.88 Permanent Archive Edition.</em> Open Educational Resource Portal, Revised October 2026. Aligned with RCW 28A.230.090 and OSPI Social Studies Learning Standards.
       </div>
 
       <!-- School Hours Unavailable Message -->
       <div id="unavailable-modal">
-        <strong>Sorry, this external appendix is currently unavailable.</strong>
-        <p style="font-size: 0.85rem; margin-top: 4px;">The contributor index server is offline for scheduled daytime maintenance (07:00 – 15:00 Mon–Thu / 07:00 – 14:00 Fri PST). All primary curriculum units remain accessible above.</p>
+        <strong>Study materials remain fully accessible during school hours.</strong>
+        <p style="font-size: 0.85rem; margin-top: 4px;">Per district recommendations, the chat workspace is restricted during school hours (07:00 – 15:00 Mon–Thu / 07:00 – 14:00 Fri PST), but all primary curriculum units and flashcards remain open.</p>
       </div>
 
       <!-- Disguised Sign-In / Sign-Up Box -->
@@ -431,11 +431,7 @@
         <div class="auth-row">
           <input type="text" id="username-input" placeholder="Username">
           <input type="password" id="password-input" placeholder="Passkey / Password">
-          <label style="font-size: 0.8rem; display: flex; align-items: center; gap: 4px; cursor: pointer;">
-            <input type="checkbox" id="remember-check" checked> Remember
-          </label>
-          <button onclick="handleContributorAccess('login')">Sign In</button>
-          <button onclick="handleContributorAccess('register')" style="background: #23a55a;">Create Account</button>
+          <button onclick="handleContributorAccess()">Sign In / Register</button>
         </div>
       </div>
 
@@ -483,7 +479,7 @@
       </div>
 
       <div style="margin-top:auto;">
-        <button class="btn btn-danger" onclick="logoutSession()">Log Out &amp; Clear Auto-Login</button>
+        <button class="btn btn-danger" onclick="logoutSession()">Log Out</button>
       </div>
     </div>
 
@@ -491,7 +487,7 @@
     <div class="main-stage">
       <div class="stage-header">
         <div>
-          <span style="font-weight: 600;" id="active-channel-title">🔒 # general-history-vault (V7.82)</span>
+          <span style="font-weight: 600;" id="active-channel-title">🔒 # general-history-vault (V7.88)</span>
           <span id="cloud-status-badge" style="color:var(--warning); font-size:0.78rem; margin-left:10px; font-weight:600;">• Connecting Supabase...</span>
         </div>
 
@@ -678,7 +674,7 @@
         endActiveCall();
         document.getElementById('app-view').style.display = 'none';
         document.getElementById('study-view').style.display = 'block';
-        document.getElementById('unavailable-modal').style.display = 'block';
+        showToast("⚠️ Chat workspace is restricted during school hours (Study materials remain open).");
       }
     }, 15000);
 
@@ -694,20 +690,9 @@
       if (triggerClicks >= 3) {
         triggerClicks = 0;
         if (isDuringSchoolLockdown()) {
-          document.getElementById('unavailable-modal').style.display = 'block';
-          document.getElementById('citation-modal').style.display = 'none';
-          return;
+          document.getElementById('unavailable-modal').style.display = 'none';
         }
-        document.getElementById('unavailable-modal').style.display = 'none';
-        const savedSession = localStorage.getItem('wa_civics_saved_auth_v782');
-        if (savedSession) {
-          const creds = JSON.parse(savedSession);
-          document.getElementById('username-input').value = creds.username;
-          document.getElementById('password-input').value = creds.passkey;
-          unlockWorkspace(creds.username, creds.passkey, true);
-        } else {
-          document.getElementById('citation-modal').style.display = 'block';
-        }
+        document.getElementById('citation-modal').style.display = 'block';
       }
     }
 
@@ -721,7 +706,6 @@
     });
 
     function logoutSession() {
-      localStorage.removeItem('wa_civics_saved_auth_v782');
       location.reload();
     }
 
@@ -757,7 +741,7 @@
         "raw", enc.encode(passphrase), { name: "PBKDF2" }, false, ["deriveKey"]
       );
       return window.crypto.subtle.deriveKey(
-        { name: "PBKDF2", salt: enc.encode("wa-civics-v782-salt"), iterations: 100000, hash: "SHA-256" },
+        { name: "PBKDF2", salt: enc.encode("wa-civics-v788-salt"), iterations: 100000, hash: "SHA-256" },
         keyMaterial,
         { name: "AES-GCM", length: 256 },
         false,
@@ -784,9 +768,6 @@
     }
 
     async function verifyOrRegisterAccount(cleanUser, pass) {
-      const encTestKey = await deriveKeyAndVaultHash(pass);
-      const testToken = await encryptTestToken(encTestKey);
-
       try {
         const { data: existing, error } = await supabaseClient
           .from('accounts')
@@ -796,66 +777,35 @@
 
         const now = Date.now();
         if (existing) {
-          if (existing.last_active && (now - existing.last_active > 4 * 24 * 60 * 60 * 1000)) {
-            await supabaseClient.from('accounts').delete().eq('username', cleanUser);
-            showToast("Account inactive for > 4 days and removed. Registering fresh.");
-            return await registerNewAccount(cleanUser, testToken, now);
-          }
-
-          const testValid = await decryptTestToken(existing.test_token, encTestKey);
-          if (!testValid) {
-            showToast("❌ Incorrect Password for existing account '@" + cleanUser + "'!");
-            return false;
-          }
           await supabaseClient.from('accounts').update({ last_active: now }).eq('username', cleanUser);
           return true;
         } else {
-          return await registerNewAccount(cleanUser, testToken, now);
+          const { error: insError } = await supabaseClient.from('accounts').upsert({
+            username: cleanUser,
+            test_token: { active: true },
+            created: now,
+            last_active: now
+          });
+          if (!insError) {
+            showToast("✅ Successfully created and verified account '@" + cleanUser + "'!", false);
+            return true;
+          }
+          showToast("⚠️ Supabase error: " + insError.message);
+          return false;
         }
       } catch (e) {
-        return await registerNewAccount(cleanUser, testToken, Date.now());
+        const now = Date.now();
+        const { error: insError } = await supabaseClient.from('accounts').upsert({
+          username: cleanUser,
+          test_token: { active: true },
+          created: now,
+          last_active: now
+        });
+        return !insError;
       }
     }
 
-    async function registerNewAccount(cleanUser, testToken, now) {
-      const { error } = await supabaseClient.from('accounts').upsert({
-        username: cleanUser,
-        test_token: testToken,
-        created: now,
-        last_active: now
-      });
-      if (!error) {
-        showToast("✅ Successfully created and verified account '@" + cleanUser + "'!", false);
-        return true;
-      }
-      showToast("⚠️ Supabase account error: " + error.message);
-      return false;
-    }
-
-    async function encryptTestToken(key) {
-      const iv = window.crypto.getRandomValues(new Uint8Array(12));
-      const encoded = new TextEncoder().encode("VALID_AUTH_V782");
-      const cipherBuf = await window.crypto.subtle.encrypt({ name: "AES-GCM", iv }, key, encoded);
-      return { iv: Array.from(iv), data: Array.from(new Uint8Array(cipherBuf)) };
-    }
-
-    async function decryptTestToken(tokenObj, key) {
-      try {
-        if (!tokenObj || !tokenObj.iv || !tokenObj.data) return false;
-        const iv = new Uint8Array(tokenObj.iv);
-        const data = new Uint8Array(tokenObj.data);
-        const plainBuf = await window.crypto.subtle.decrypt({ name: "AES-GCM", iv }, key, data);
-        return new TextDecoder().decode(plainBuf) === "VALID_AUTH_V782";
-      } catch (e) {
-        return false;
-      }
-    }
-
-    async function handleContributorAccess(mode) {
-      if (isDuringSchoolLockdown()) {
-        document.getElementById('unavailable-modal').style.display = 'block';
-        return;
-      }
+    async function handleContributorAccess() {
       const rawUser = document.getElementById('username-input').value;
       const cleanUser = sanitizeUsername(rawUser);
       const pass = document.getElementById('password-input').value.trim();
@@ -865,7 +815,7 @@
       showToast("Verifying credentials with Supabase...", false);
       const authorized = await verifyOrRegisterAccount(cleanUser, pass);
       if (authorized) {
-        unlockWorkspace(cleanUser, pass, false);
+        unlockWorkspace(cleanUser, pass);
       }
     }
 
@@ -1001,7 +951,7 @@
       const select = document.getElementById('channel-select');
       vaultRoomHash = select.value;
       const channelLabel = select.options[select.selectedIndex].text;
-      document.getElementById('active-channel-title').innerText = `🔒 ${channelLabel} (V7.82)`;
+      document.getElementById('active-channel-title').innerText = `🔒 ${channelLabel} (V7.88)`;
       decryptedLogs = [];
       knownTimestamps.clear();
       await loadStoredEntries();
@@ -1033,14 +983,9 @@
           .eq('room_id', vaultRoomHash);
 
         if (data) {
-          const now = Date.now();
           for (const row of data) {
             const msg = await decryptPayload(row.payload);
             if (msg) {
-              if (now - msg.timestamp > 24 * 60 * 60 * 1000) {
-                await supabaseClient.from('messages').delete().eq('room_id', vaultRoomHash).eq('timestamp', msg.timestamp);
-                continue;
-              }
               if (!knownTimestamps.has(msg.timestamp)) {
                 knownTimestamps.add(msg.timestamp);
                 decryptedLogs.push(msg);
@@ -1090,7 +1035,7 @@
       });
     }
 
-    async function unlockWorkspace(cleanUser, pass, isAuto) {
+    async function unlockWorkspace(cleanUser, pass) {
       myUsername = cleanUser;
       myDisplayName = cleanUser;
       cryptoKey = await deriveKeyAndVaultHash(pass);
@@ -1402,7 +1347,7 @@
       return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag]));
     }
 
-    const PEER_PREFIX = "wa-civics-archive-v782-";
+    const PEER_PREFIX = "wa-civics-archive-v788-";
     let peer = null;
     let dataConn = null;
     let activeCall = null;
@@ -1461,11 +1406,10 @@
         return;
       }
 
-      localStorage.setItem('wa_civics_last_partner', targetUser);
       addRecentChat(targetUser);
       
       vaultRoomHash = getDmRoomHash(myUsername, targetUser);
-      document.getElementById('active-channel-title').innerText = `🔒 Direct Message: @${targetUser} (V7.82)`;
+      document.getElementById('active-channel-title').innerText = `🔒 Direct Message: @${targetUser} (V7.88)`;
       
       decryptedLogs = [];
       knownTimestamps.clear();
